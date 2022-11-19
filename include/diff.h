@@ -15,8 +15,10 @@ const double EPSILON = 1e-6;
 
 enum differentiator_codes
 {
-    DIFF_SUCCESS              = 0,
-    ERR_DIFF_NULL_PTR         = 1,
+    DIFF_ERROR                = -1,
+    DIFF_SUCCESS              =  0,
+    ERR_DIFF_NULL_PTR         =  1,
+    ERR_DIFF_BAD_FILE         =  2
     
 };
 

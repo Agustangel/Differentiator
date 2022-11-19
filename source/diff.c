@@ -132,3 +132,70 @@ node_t* Exp(node_t* node)
 }
 
 //=========================================================================
+
+void dumpLaTeX(FILE* file, const node_t* node)
+{
+    CHECK(file != NULL, ;);
+    CHECK(node != NULL, ;);
+
+    switch (node->data.type)
+    {
+        case NUM:
+            fprintf(file, "%lg", node->data.dblValue);
+            return;
+
+        case VAR:
+            fprintf(file, "%c", node->data.varValue);
+            return;
+
+        case OP:
+            if ((node->left == NULL) || (node->right == NULL))
+            {
+                fprintf(file, "\\text{error}");
+                return;    
+            }
+
+            fprintf(file, "(");
+            switch (node->data.opcode)
+            {
+                case OP_ERROR:
+                    fprintf(file, " \\text{error} ");
+                    break;
+
+                case OP_ADD:
+                    dumpLaTeX(file, node->left);
+                    fprintf(file, " + ");
+                    dumpLaTeX(file, node->right);
+                    break;
+
+                case OP_SUB:
+                    dumpLaTeX(file, node->left);
+                    fprintf(file, " - ");
+                    dumpLaTeX(file, node->right);
+                    break;
+
+                case OP_MUL:
+                    dumpLaTeX(file, node->left);
+                    fprintf(file, " \\cdot ");
+                    dumpLaTeX(file, node->right);
+                    break;
+
+                case OP_DIV:
+                    fprintf(file, " \\frac{ ");
+                    dumpLaTeX(file, node->left);
+                    fprintf(file, "}{");
+                    dumpLaTeX(file, node->right);
+                    fprintf(file, "} ");
+                    break;
+
+                default:
+                    fprintf(file, "\\text{error}");
+            }
+            fprintf(file, ")");
+            return;
+        
+        default:
+            fprintf(file, "\\text{error}");
+            return;
+    }
+}

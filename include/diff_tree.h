@@ -62,6 +62,7 @@ enum node_type
 
 enum node_op
 {
+    OP_ERROR   = -1,
     OP_ADD     = 1,
     OP_SUB     = 2,
     OP_MUL     = 3,
