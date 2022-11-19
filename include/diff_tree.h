@@ -62,13 +62,13 @@ enum node_type
 
 enum node_op
 {
-    plus    = 1,
-    minus   = 2,
-    mul     = 3,
-    div     = 4,
-    pow     = 5,
-    sqrt    = 6,
-    bracket = 7,
+    ADD     = 1,
+    SUB     = 2,
+    MUL     = 3,
+    DIV     = 4,
+    POW     = 5,
+    SQRT    = 6,
+    BRACKET = 7,
 };
 
 enum node_codes

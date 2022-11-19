@@ -18,23 +18,16 @@ int treeCtor(tree_t* tree)
 
 //=========================================================================
 
-node_t* createNode(treeData_t value)
+node_t* createNode(int val, node_t* left, node_t* right)
 {
     node_t* node = (node_t*) calloc(1, sizeof(node_t));
     CHECK(node !=  NULL, NULL);
 
-    node->data = value;
-    node->left  = NULL;
-    node->right = NULL;
-    
-    if(isalpha(value))
-    {
-        node->type = VAR;
-    }
-    else
-    {
-        node->type = NUM;
-    }
+    node->type  = OP;
+    node->data.opValue = val;
+
+    node->left  = left;
+    node->right = right;
 
     return node; 
 }
