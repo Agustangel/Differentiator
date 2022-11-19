@@ -34,6 +34,38 @@ node_t* createNode(int val, node_t* left, node_t* right)
 
 //=========================================================================
 
+node_t* createNum(int val)
+{
+    node_t* node = (node_t*) calloc(1, sizeof(node_t));
+    CHECK(node !=  NULL, NULL);
+
+    node->type  = NUM;
+    node->data.dblValue = val;
+
+    node->left  = NULL;
+    node->right = NULL;
+ 
+    return node;
+}
+
+//=========================================================================
+
+node_t* createVar(const char* val)
+{
+    node_t* node = (node_t*) calloc(1, sizeof(node_t));
+    CHECK(node !=  NULL, NULL);
+
+    node->type  = VAR;
+    node->data.varValue = val;
+
+    node->left  = NULL;
+    node->right = NULL;
+ 
+    return node;
+}
+
+//=========================================================================
+
 int treeDtor(tree_t* tree)
 {
     CHECK(tree !=  NULL, ERR_TREE_NULL_PTR);

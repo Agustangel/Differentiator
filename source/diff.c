@@ -3,7 +3,7 @@
 #include "diff.h"
 #include "diff_tree.h"
 
-
+//TODO changed func Pow
 //=========================================================================
 node_t* differentiate(node_t* node)
 {
@@ -12,7 +12,7 @@ node_t* differentiate(node_t* node)
     switch (node->type)
     {
     case NUM:
-        return createNode(NUM, 0, NULL, NULL);
+        return createNum(0);
 
     case VAR:
         return createNum(1);
@@ -30,7 +30,7 @@ node_t* differentiate(node_t* node)
             return Add(Mul(dL, cR), Mul(cL, dR));
 
         case OP_DIV:
-            break;
+            return Div(Sub(Mul(dL, cR), Mul(cL, dR)), Pow(cR, 2));
 
         default:
             break;
@@ -46,26 +46,32 @@ node_t* differentiate(node_t* node)
 
 node_t* Add(node_t* left, node_t* right)
 {
-    return createNode(ADD, left, right);
+    return createNode(OP_ADD, left, right);
 }
 
 //-------------------------------------------------------------------
 
 node_t* Sub(node_t* left, node_t* right)
 {
-    return createNode(SUB, left, right);
+    return createNode(OP_SUB, left, right);
 }
 
 //-------------------------------------------------------------------
 
 node_t* Mul(node_t* left, node_t* right)
 {
-    return createNode(MUL, left, right);
+    return createNode(OP_MUL, left, right);
 }
 
 //-------------------------------------------------------------------
 
 node_t* Div(node_t* left, node_t* right)
 {
-    return createNode(DIV, left, right);
+    return createNode(OP_DIV, left, right);
+}
+//-------------------------------------------------------------------
+
+node_t* Pow(node_t* left, node_t* right)
+{
+    return createNode(OP_POW, left, right);
 }
