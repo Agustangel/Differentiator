@@ -22,7 +22,7 @@ struct node_t
 {
     enum node_type type;
     treeData_t     data;
-    
+
     node_t* left;
     node_t* right;
 
@@ -62,12 +62,13 @@ enum node_type
 
 enum node_op
 {
-    plus  = 1,
-    minus = 2,
-    mul   = 3,
-    div   = 4,
-    pow   = 5,
-    sqrt  = 6
+    plus    = 1,
+    minus   = 2,
+    mul     = 3,
+    div     = 4,
+    pow     = 5,
+    sqrt    = 6,
+    bracket = 7,
 };
 
 enum node_codes

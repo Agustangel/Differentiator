@@ -12,13 +12,6 @@ enum differentiator_codes
     ERR_DIFF_NULL_PTR         = 1
 };
 
-enum node_type
-{
-    NUM = 1,
-    VAR = 2,
-    OP  = 3
-};
-
 enum oprion_type
 {
     OP_ADD = 1,
