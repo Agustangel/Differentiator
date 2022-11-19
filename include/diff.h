@@ -16,7 +16,8 @@ const double EPSILON = 1e-6;
 enum differentiator_codes
 {
     DIFF_SUCCESS              = 0,
-    ERR_DIFF_NULL_PTR         = 1
+    ERR_DIFF_NULL_PTR         = 1,
+    
 };
 
 node_t* differentiate(node_t* node);
