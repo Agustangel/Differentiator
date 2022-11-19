@@ -35,10 +35,15 @@ node_t* differentiate(node_t* node)
         case OP_POW:
             return Mul(cR, Pow(cL, Sub(cR, createNum(1))));
 
+        case OP_SIN:
+            return Mul(Cos(cR), dR);
+
+        case OP_COS:
+            return Mul(Mul(Sin(cR), createNum(-1)), dR);
+        
         default:
             break;
         }
-        break;
 
     default:
         break;
@@ -88,7 +93,25 @@ node_t* Div(node_t* left, node_t* right)
 
 node_t* Pow(node_t* node, int power)
 {
-    CHECK(node  != NULL, ERR_DIFF_NULL_PTR);
+    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
 
     return createNode(OP_POW, node, createNum(power));
+}
+
+//-------------------------------------------------------------------
+
+node_t* Sin(node_t* node)
+{
+    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
+
+    return createNode(OP_SIN, NULL, node);
+}
+
+//-------------------------------------------------------------------
+
+node_t* Cos(node_t* node)
+{
+    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
+
+    return createNode(OP_COS, NULL, node);
 }
