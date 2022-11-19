@@ -33,7 +33,7 @@ node_t* differentiate(node_t* node)
             return Div(Sub(Mul(dL, cR), Mul(cL, dR)), Pow(cR, 2));
 
         case OP_POW:
-            return Mul(cR, Pow(cL, Sub(cR, createNum(1))));
+            return Mul(Pow(cL, Sub(cR, createNum(1))), cR);
 
         case OP_SIN:
             return Mul(Cos(cR), dR);
@@ -41,6 +41,12 @@ node_t* differentiate(node_t* node)
         case OP_COS:
             return Mul(Mul(Sin(cR), createNum(-1)), dR);
         
+        case OP_EXP:
+            return Mul(Exp(cR), dR);
+
+        case OP_LN:
+            return Mul(Div(createNum(1), cR), dR);
+
         default:
             break;
         }
@@ -115,3 +121,14 @@ node_t* Cos(node_t* node)
 
     return createNode(OP_COS, NULL, node);
 }
+
+//-------------------------------------------------------------------
+
+node_t* Exp(node_t* node)
+{
+    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
+
+    return createNode(OP_EXP, NULL, node);
+}
+
+//=========================================================================

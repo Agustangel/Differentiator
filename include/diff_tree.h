@@ -69,8 +69,9 @@ enum node_op
     OP_POW     = 5,
     OP_SIN     = 6,
     OP_COS     = 7,
-    OP_SQRT    = 8,
-    OP_BRACKET = 9,
+    OP_EXP     = 8,
+    OP_LN      = 9,
+    OP_BRACKET = 10
 };
 
 enum node_codes

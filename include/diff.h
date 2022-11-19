@@ -21,3 +21,11 @@ enum differentiator_codes
 };
 
 node_t* differentiate(node_t* node);
+node_t* Add(node_t* left, node_t* right);
+node_t* Sub(node_t* left, node_t* right);
+node_t* Mul(node_t* left, node_t* right);
+node_t* Div(node_t* left, node_t* right);
+node_t* Pow(node_t* node, int power);
+node_t* Sin(node_t* node);
+node_t* Cos(node_t* node);
+node_t* Exp(node_t* node);
