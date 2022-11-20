@@ -133,12 +133,24 @@ node_t* Exp(node_t* node)
 
 //=========================================================================
 
+int dump(tree_t* tree)
+{
+    FILE* outfile = fopen("texdump.tex", "a");
+    fprintf(outfile, "$$");
+    dumpLaTeX(outfile, tree->root);
+    fprintf(outfile, "$$\n");
+
+    return DIFF_SUCCESS;
+}
+
+//=========================================================================
+
 void dumpLaTeX(FILE* file, const node_t* node)
 {
     CHECK(file != NULL, ;);
     CHECK(node != NULL, ;);
 
-    switch (node->data.type)
+    switch (node->type)
     {
         case NUM:
             fprintf(file, "%lg", node->data.dblValue);
@@ -156,7 +168,7 @@ void dumpLaTeX(FILE* file, const node_t* node)
             }
 
             fprintf(file, "(");
-            switch (node->data.opcode)
+            switch (node->data.opValue)
             {
                 case OP_ERROR:
                     fprintf(file, " \\text{error} ");
@@ -199,3 +211,5 @@ void dumpLaTeX(FILE* file, const node_t* node)
             return;
     }
 }
+
+//=========================================================================
