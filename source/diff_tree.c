@@ -131,11 +131,35 @@ int dumpGraphNode(node_t* node, FILE* dot_out)
         case NUM:
             fprintf(dot_out, "\n\t\t\"%lg\"[shape = \"ellipse\", color=\"#900000\", style=\"filled\", \
                                fillcolor = \"#D0FDFF\"];\n", node->data.dblValue);
+            if(node->left != NULL)
+            {
+                fprintf(dot_out, "\t\t\"%s\"->", node->data.dblValue);
+                fprintfConnection(node->left, LEFT, dot_out);
+                dumpGraphNode(node->left, dot_out);
+            }
+            if(node->right != NULL)
+            {
+                fprintf(dot_out, "\t\t\"%s\"->", node->data.dblValue);
+                fprintfConnection(node->right, RIGHT, dot_out);
+                dumpGraphNode(node->right, dot_out);
+            }
             break;
 
         case VAR:
             fprintf(dot_out, "\n\t\t\"%c\"[shape = \"ellipse\", color=\"#900000\", style=\"filled\", \
                                fillcolor = \"#D0FDFF\"];\n", node->data.varValue);
+            if(node->left != NULL)
+            {
+                fprintf(dot_out, "\t\t\"%s\"->", node->data.varValue);
+                fprintfConnection(node->left, LEFT, dot_out);
+                dumpGraphNode(node->left, dot_out);
+            }
+            if(node->right != NULL)
+            {
+                fprintf(dot_out, "\t\t\"%s\"->", node->data.varValue);
+                fprintfConnection(node->right, RIGHT, dot_out);
+                dumpGraphNode(node->right, dot_out);
+            }
             break;
 
         case OP:
@@ -160,26 +184,84 @@ int dumpGraphNode(node_t* node, FILE* dot_out)
                     break;
 
                 case OP_DIV:
-                    fprintf(dot_out, "\n\t\t\"\"[shape = \"ellipse\", color=\"#900000\", \
+                    fprintf(dot_out, "\n\t\t\"/\"[shape = \"ellipse\", color=\"#900000\", \
                                        style=\"filled\", fillcolor = \"#D0FDFF\"];\n");
                     break;
 
                 default:
                     break;
-            }    
-    }
-    
-    if(node->left != NULL)
-    {
-        fprintf(dot_out, "\t\t\"%s\"->\"%s\"[label = \"YES\"];\n", node->data, (node->left)->data);
-        dumpGraphNode(node->left, dot_out);
-    }
+            }
 
-    if(node->right != NULL)
-    {
-        fprintf(dot_out, "\t\t\"%s\"->\"%s\"[label = \"NO\"];\n", node->data, (node->right)->data);
-        dumpGraphNode(node->right, dot_out);
+            if(node->left != NULL)
+            {
+                fprintf(dot_out, "\t\t\"%s\"->", node->data.opValue);
+                fprintfConnection(node->left, LEFT, dot_out);
+                dumpGraphNode(node->left, dot_out);
+            }
+            if(node->right != NULL)
+            {
+                fprintf(dot_out, "\t\t\"%s\"->", node->data.opValue);
+                fprintfConnection(node->right, RIGHT, dot_out);
+                dumpGraphNode(node->right, dot_out);
+            }
+            break;
+
+        default:
+            break; 
     }
 
     return TREE_SUCCESS;
 }
+
+//=========================================================================
+
+int fprintfConnection(node_t* node, char* ANSW, FILE* dot_out)
+{
+    CHECK(ANSW    !=  NULL, ERR_TREE_NULL_PTR);
+    CHECK(node    !=  NULL, ERR_TREE_NULL_PTR);
+    CHECK(dot_out !=  NULL, ERR_TREE_BAD_FILE);
+
+    switch (node->type)
+    {
+        case NUM:
+            fprintf(dot_out, "\"%lg\"[label = \"%s\"];\n", node->data.dblValue, ANSW);
+            break;
+
+        case VAR:
+            fprintf(dot_out, "\"%c\"[label = \"%s\"];\n", node->data.varValue, ANSW);
+            break;
+
+        case OP:
+            switch (node->data.opValue)
+            {
+                case OP_ERROR:
+                    break;
+
+                case OP_ADD:
+                    fprintf(dot_out, "\"+\"[label = \"%s\"];\n", ANSW);
+                    break;
+
+                case OP_SUB:
+                    fprintf(dot_out, "\"-\"[label = \"%s\"];\n", ANSW);
+                    break;
+
+                case OP_MUL:
+                    fprintf(dot_out, "\"*\"[label = \"%s\"];\n", ANSW);
+                    break;
+
+                case OP_DIV:
+                    fprintf(dot_out, "\"/\"[label = \"%s\"];\n", ANSW);
+                    break;
+
+                default:
+                    break;
+            }
+
+        default:
+            break;
+    }
+
+    return TREE_SUCCESS;
+}
+
+//=========================================================================

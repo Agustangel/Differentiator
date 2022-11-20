@@ -4,6 +4,9 @@
 #include <stdint.h>
 
 
+#define LEFT "YES"
+#define RIGHT "NO"
+
 //=========================================================================
 
 typedef uint_fast16_t treeStatus_t;
@@ -95,3 +98,15 @@ enum
     DATA_POISON  = 0,
     ERROR_NUMBER = 5
 };
+
+//=========================================================================
+
+int treeCtor(tree_t* tree);
+node_t* createNode(int val, node_t* left, node_t* right);
+node_t* createNum(int val);
+node_t* createVar(const char* val);
+int treeDtor(tree_t* tree);
+void treeNodeDtor(node_t* node);
+int dumpGraphTree(tree_t* tree);
+int dumpGraphNode(node_t* node, FILE* dot_out);
+int fprintfConnection(node_t* node, char* ANSW, FILE* dot_out);
