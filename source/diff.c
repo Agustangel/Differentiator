@@ -4,6 +4,7 @@
 #include "diff_tree.h"
 
 
+const char* s = NULL;
 //=========================================================================
 node_t* differentiate(node_t* node)
 {
@@ -213,3 +214,110 @@ void dumpLaTeX(FILE* file, const node_t* node)
 }
 
 //=========================================================================
+
+int printAllExpression(tree_t* tree)
+{
+
+    return DIFF_SUCCESS;
+}
+
+//=========================================================================
+
+int getG(const char* str)
+{
+    s = str;
+
+    int val = getN();
+    CHECK(*s == '\0', DIFF_ERROR);
+
+    return val;
+}
+
+//-------------------------------------------------------------------
+
+int getN()
+{
+    int val = 0;
+    const char* sOld = s;
+
+    if((*s >= '0') && (*s <= '9'))
+    {
+        val = (val * 10) + (*s - '0');
+        ++s;
+    }
+    CHECK(s > sOld, DIFF_ERROR);
+
+    return val;
+}
+
+//-------------------------------------------------------------------
+
+int getE()
+{
+    int val = getT();
+
+    while((*s == '+') || (*s == '-'))
+    {
+        char op = *s;
+        ++s;
+
+        int val_2 = getT();
+        if(op == '+')
+        {
+            val += val_2;
+        }
+        else
+        {
+            val -= val_2;
+        }
+    }
+
+    return val;
+}
+
+//-------------------------------------------------------------------
+
+int getT()
+[
+    int val = getN();
+
+    while((*s == '*') || (*s == '/'))
+    {
+        char op = *s;
+        ++s;
+
+        int val_2 = getN();
+        if(op == '*')
+        {
+            val *= val_2;
+        }
+        else
+        {
+            val /= val_2;
+        }
+    }
+
+    return val;    
+]
+
+//-------------------------------------------------------------------
+
+int getP()
+{
+    int val = 0;
+    if(*s == '(')
+    {
+        ++s;
+        val = getE();
+        CHECK(*s == ')', DIFF_ERROR);
+        ++s;
+    }
+    else
+    {
+        val = getN();
+    }
+
+    return val;
+}
+
+//-------------------------------------------------------------------

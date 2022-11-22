@@ -31,3 +31,7 @@ node_t* Pow(node_t* node, int power);
 node_t* Sin(node_t* node);
 node_t* Cos(node_t* node);
 node_t* Exp(node_t* node);
+getT();
+getE();
+getN();
+getG(const char* str);
