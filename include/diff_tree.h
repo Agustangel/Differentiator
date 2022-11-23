@@ -4,42 +4,8 @@
 #include <stdint.h>
 
 
-#define LEFT "YES"
-#define RIGHT "NO"
-
-//=========================================================================
-
-typedef uint_fast16_t treeStatus_t;
-typedef struct node_t node_t;
-
-typedef struct treeData_t
-{
-    double       dblValue;
-    const char*  varValue;
-    enum node_op opValue;
-
-} treeData_t;
-
-
-struct node_t
-{
-    enum node_type type;
-    treeData_t     data;
-
-    node_t* left;
-    node_t* right;
-
-};
-
-
-typedef struct tree_t
-{
-    node_t* root;
-    size_t  size;
-
-    treeStatus_t status;
-
-} tree_t;
+#define _LEFT "YES"
+#define _RIGHT "NO"
 
 //=========================================================================
 
@@ -98,6 +64,41 @@ enum
     DATA_POISON  = 0,
     ERROR_NUMBER = 5
 };
+
+//=========================================================================
+
+
+typedef uint_fast16_t treeStatus_t;
+typedef struct node_t node_t;
+
+typedef struct treeData_t
+{
+    double       dblValue;
+    const char*  varValue;
+    enum node_op opValue;
+
+} treeData_t;
+
+
+struct node_t
+{
+    enum node_type type;
+    treeData_t     data;
+
+    node_t* left;
+    node_t* right;
+
+};
+
+
+typedef struct tree_t
+{
+    node_t* root;
+    size_t  size;
+
+    treeStatus_t status;
+
+} tree_t;
 
 //=========================================================================
 

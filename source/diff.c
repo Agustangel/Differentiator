@@ -1,14 +1,14 @@
 #include <stdio.h>
-#include <bintree.h>
 #include "diff.h"
 #include "diff_tree.h"
+#include "debug.h"
 
 
-const char* s = NULL;
+char* s = NULL;
 //=========================================================================
 node_t* differentiate(node_t* node)
 {
-    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
+    CHECK(node != NULL, NULL);
 
     switch (node->type)
     {
@@ -19,7 +19,7 @@ node_t* differentiate(node_t* node)
         return createNum(1);
 
     case OP:
-        switch (node->opValue)
+        switch (node->data.opValue)
         {
         case OP_ADD:
             return Add(dL, dR);
@@ -31,7 +31,7 @@ node_t* differentiate(node_t* node)
             return Add(Mul(dL, cR), Mul(cL, dR));
 
         case OP_DIV:
-            return Div(Sub(Mul(dL, cR), Mul(cL, dR)), Pow(cR, 2));
+            return Div(Sub(Mul(dL, cR), Mul(cL, dR)), Pow(cR, createNum(2)));
 
         case OP_POW:
             return Mul(Pow(cL, Sub(cR, createNum(1))), cR);
@@ -61,8 +61,8 @@ node_t* differentiate(node_t* node)
 
 node_t* Add(node_t* left, node_t* right)
 {
-    CHECK(left  != NULL, ERR_DIFF_NULL_PTR);
-    CHECK(right != NULL, ERR_DIFF_NULL_PTR);
+    CHECK(left  != NULL, NULL);
+    CHECK(right != NULL, NULL);
 
     return createNode(OP_ADD, left, right);
 }
@@ -71,8 +71,8 @@ node_t* Add(node_t* left, node_t* right)
 
 node_t* Sub(node_t* left, node_t* right)
 {
-    CHECK(left  != NULL, ERR_DIFF_NULL_PTR);
-    CHECK(right != NULL, ERR_DIFF_NULL_PTR);
+    CHECK(left  != NULL, NULL);
+    CHECK(right != NULL, NULL);
 
     return createNode(OP_SUB, left, right);
 }
@@ -81,8 +81,8 @@ node_t* Sub(node_t* left, node_t* right)
 
 node_t* Mul(node_t* left, node_t* right)
 {
-    CHECK(left  != NULL, ERR_DIFF_NULL_PTR);
-    CHECK(right != NULL, ERR_DIFF_NULL_PTR);
+    CHECK(left  != NULL, NULL);
+    CHECK(right != NULL, NULL);
 
     return createNode(OP_MUL, left, right);
 }
@@ -91,25 +91,25 @@ node_t* Mul(node_t* left, node_t* right)
 
 node_t* Div(node_t* left, node_t* right)
 {
-    CHECK(left  != NULL, ERR_DIFF_NULL_PTR);
-    CHECK(right != NULL, ERR_DIFF_NULL_PTR);
+    CHECK(left  != NULL, NULL);
+    CHECK(right != NULL, NULL);
 
     return createNode(OP_DIV, left, right);
 }
 //-------------------------------------------------------------------
 
-node_t* Pow(node_t* node, int power)
+node_t* Pow(node_t* node, node_t* power)
 {
-    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
+    CHECK(node != NULL, NULL);
 
-    return createNode(OP_POW, node, createNum(power));
+    return createNode(OP_POW, node, power);
 }
 
 //-------------------------------------------------------------------
 
 node_t* Sin(node_t* node)
 {
-    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
+    CHECK(node != NULL, NULL);
 
     return createNode(OP_SIN, NULL, node);
 }
@@ -118,7 +118,7 @@ node_t* Sin(node_t* node)
 
 node_t* Cos(node_t* node)
 {
-    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
+    CHECK(node != NULL, NULL);
 
     return createNode(OP_COS, NULL, node);
 }
@@ -127,7 +127,7 @@ node_t* Cos(node_t* node)
 
 node_t* Exp(node_t* node)
 {
-    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
+    CHECK(node != NULL, NULL);
 
     return createNode(OP_EXP, NULL, node);
 }
@@ -137,6 +137,8 @@ node_t* Exp(node_t* node)
 int dump(tree_t* tree)
 {
     FILE* outfile = fopen("texdump.tex", "a");
+    CHECK(outfile != NULL, ERR_DIFF_NULL_PTR);
+
     fprintf(outfile, "$$");
     dumpLaTeX(outfile, tree->root);
     fprintf(outfile, "$$\n");
@@ -158,7 +160,7 @@ void dumpLaTeX(FILE* file, const node_t* node)
             return;
 
         case VAR:
-            fprintf(file, "%c", node->data.varValue);
+            fprintf(file, "%c", *node->data.varValue);
             return;
 
         case OP:
@@ -169,7 +171,7 @@ void dumpLaTeX(FILE* file, const node_t* node)
             }
 
             fprintf(file, "(");
-            switch (node->data.opValue)
+            switch(node->data.opValue)
             {
                 case OP_ERROR:
                     fprintf(file, " \\text{error} ");
@@ -215,19 +217,31 @@ void dumpLaTeX(FILE* file, const node_t* node)
 
 //=========================================================================
 
-int printAllExpression(tree_t* tree)
+int printAllExpression(node_t* node)
 {
+    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
+
+    printf("(");
+    if(node->left != NULL)
+    {
+        printAllExpression(node->left);
+    }
+    printf("%s)", node->data);
+    if(node->right != NULL)
+    {
+        printAllExpression(node->right);
+    }      
 
     return DIFF_SUCCESS;
 }
 
 //=========================================================================
 
-int getG(const char* str)
+int getG(char* str)
 {
     s = str;
 
-    int val = getN();
+    int val = getE();
     CHECK(*s == '\0', DIFF_ERROR);
 
     return val;
@@ -238,9 +252,9 @@ int getG(const char* str)
 int getN()
 {
     int val = 0;
-    const char* sOld = s;
+    char* sOld = s;
 
-    if((*s >= '0') && (*s <= '9'))
+    while((*s >= '0') && (*s <= '9'))
     {
         val = (val * 10) + (*s - '0');
         ++s;
@@ -278,15 +292,15 @@ int getE()
 //-------------------------------------------------------------------
 
 int getT()
-[
-    int val = getN();
+{
+    int val = getP();
 
     while((*s == '*') || (*s == '/'))
     {
         char op = *s;
         ++s;
 
-        int val_2 = getN();
+        int val_2 = getP();
         if(op == '*')
         {
             val *= val_2;
@@ -298,7 +312,7 @@ int getT()
     }
 
     return val;    
-]
+}
 
 //-------------------------------------------------------------------
 

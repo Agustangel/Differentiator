@@ -1,15 +1,17 @@
 #include <stdio.h>
-#include <bintree.h>
+#include "diff.h"
+#include "diff_tree.h"
+#include "debug.h"
 
 
 
 int main()
 {
-    tree_t tree = {0};
-    tree_ctor(&tree);
-    elem_t fictiondata = 0;
-    insert_root(&tree, 0);
+    char str[80];
+    scanf("%s", str);
 
+    int val = getG(str);
+    printf("val = %d\n", val);
     
     return 0;
 }

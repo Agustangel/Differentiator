@@ -107,7 +107,7 @@ int dumpGraphTree(tree_t* tree)
     fprintf(file_dot, "\tnode[shape = \"cube\", color = \"#800000\", fontsize = 15, style = \"filled\", fillcolor = \"#88CEFA\"];\n"
                       "\tedge[color = \"#190970\", fontsize = 11];\n");
 
-    node_dump_graph(tree->root, file_dot);
+    dumpGraphNode(tree->root, file_dot);
     fprintf(file_dot, "}");
 
     fclose(file_dot);
@@ -133,31 +133,31 @@ int dumpGraphNode(node_t* node, FILE* dot_out)
                                fillcolor = \"#D0FDFF\"];\n", node->data.dblValue);
             if(node->left != NULL)
             {
-                fprintf(dot_out, "\t\t\"%s\"->", node->data.dblValue);
-                fprintfConnection(node->left, LEFT, dot_out);
+                fprintf(dot_out, "\t\t\"%lg\"->", node->data.dblValue);
+                fprintfConnection(node->left, _LEFT, dot_out);
                 dumpGraphNode(node->left, dot_out);
             }
             if(node->right != NULL)
             {
-                fprintf(dot_out, "\t\t\"%s\"->", node->data.dblValue);
-                fprintfConnection(node->right, RIGHT, dot_out);
+                fprintf(dot_out, "\t\t\"%lg\"->", node->data.dblValue);
+                fprintfConnection(node->right, _RIGHT, dot_out);
                 dumpGraphNode(node->right, dot_out);
             }
             break;
 
         case VAR:
             fprintf(dot_out, "\n\t\t\"%c\"[shape = \"ellipse\", color=\"#900000\", style=\"filled\", \
-                               fillcolor = \"#D0FDFF\"];\n", node->data.varValue);
+                               fillcolor = \"#D0FDFF\"];\n", *node->data.varValue);
             if(node->left != NULL)
             {
-                fprintf(dot_out, "\t\t\"%s\"->", node->data.varValue);
-                fprintfConnection(node->left, LEFT, dot_out);
+                fprintf(dot_out, "\t\t\"%c\"->", *node->data.varValue);
+                fprintfConnection(node->left, _LEFT, dot_out);
                 dumpGraphNode(node->left, dot_out);
             }
             if(node->right != NULL)
             {
-                fprintf(dot_out, "\t\t\"%s\"->", node->data.varValue);
-                fprintfConnection(node->right, RIGHT, dot_out);
+                fprintf(dot_out, "\t\t\"%c\"->", *node->data.varValue);
+                fprintfConnection(node->right, _RIGHT, dot_out);
                 dumpGraphNode(node->right, dot_out);
             }
             break;
@@ -194,14 +194,14 @@ int dumpGraphNode(node_t* node, FILE* dot_out)
 
             if(node->left != NULL)
             {
-                fprintf(dot_out, "\t\t\"%s\"->", node->data.opValue);
-                fprintfConnection(node->left, LEFT, dot_out);
+                fprintf(dot_out, "\t\t\"%d\"->", node->data.opValue);
+                fprintfConnection(node->left, _LEFT, dot_out);
                 dumpGraphNode(node->left, dot_out);
             }
             if(node->right != NULL)
             {
-                fprintf(dot_out, "\t\t\"%s\"->", node->data.opValue);
-                fprintfConnection(node->right, RIGHT, dot_out);
+                fprintf(dot_out, "\t\t\"%d\"->", node->data.opValue);
+                fprintfConnection(node->right, _RIGHT, dot_out);
                 dumpGraphNode(node->right, dot_out);
             }
             break;
@@ -228,7 +228,7 @@ int fprintfConnection(node_t* node, char* ANSW, FILE* dot_out)
             break;
 
         case VAR:
-            fprintf(dot_out, "\"%c\"[label = \"%s\"];\n", node->data.varValue, ANSW);
+            fprintf(dot_out, "\"%c\"[label = \"%s\"];\n", *node->data.varValue, ANSW);
             break;
 
         case OP:
