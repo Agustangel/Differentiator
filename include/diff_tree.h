@@ -11,13 +11,14 @@
 
 enum tree_codes
 {
-    TREE_SUCCESS              = 0,
-    ERR_TREE_NULL_PTR         = 1,
-    ERR_TREE_OUT_MEMORY       = 2,
-    ERR_TREE_BAD_SIZE         = 3,
-    ERR_TREE_BAD_POSITION     = 4,
-    ERR_TREE_BAD_STRING       = 5,
-    ERR_TREE_BAD_FILE         = 6
+    TREE_ERROR                = -1,
+    TREE_SUCCESS              =  0,
+    ERR_TREE_NULL_PTR         =  1,
+    ERR_TREE_OUT_MEMORY       =  2,
+    ERR_TREE_BAD_SIZE         =  3,
+    ERR_TREE_BAD_POSITION     =  4,
+    ERR_TREE_BAD_STRING       =  5,
+    ERR_TREE_BAD_FILE         =  6
 };
 
 //-------------------------------------------------------------------
@@ -94,7 +95,6 @@ struct node_t
 typedef struct tree_t
 {
     node_t* root;
-    size_t  size;
 
     treeStatus_t status;
 

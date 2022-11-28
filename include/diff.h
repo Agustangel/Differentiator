@@ -25,6 +25,14 @@ enum differentiator_codes
     
 };
 
+enum
+{
+    ALL   = 5,
+    SHORT = 6
+};
+
+//=========================================================================
+
 node_t* differentiate(node_t* node);
 node_t* Add(node_t* left, node_t* right);
 node_t* Sub(node_t* left, node_t* right);
@@ -36,8 +44,10 @@ node_t* Cos(node_t* node);
 node_t* Exp(node_t* node);
 int dump(tree_t* tree);
 void dumpLaTeX(FILE* file, const node_t* node);
-int getG(char* str);
-int getE();
-int getT();
-int getN();
-int getP();
+int printExpression(node_t* node, int type);
+node_t* makeAST(char* str);
+node_t* getG(char* s);
+node_t* getE(char* s);
+node_t* getT(char* s);
+node_t* getN(char* s);
+node_t* getP(char* s);

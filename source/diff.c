@@ -4,7 +4,7 @@
 #include "debug.h"
 
 
-char* s = NULL;
+
 //=========================================================================
 node_t* differentiate(node_t* node)
 {
@@ -217,16 +217,25 @@ void dumpLaTeX(FILE* file, const node_t* node)
 
 //=========================================================================
 
-int printAllExpression(node_t* node)
+int printExpression(node_t* node, int type)
 {
     CHECK(node != NULL, ERR_DIFF_NULL_PTR);
 
-    printf("(");
+    if(type == ALL)
+    {
+        printf("(");
+    }
     if(node->left != NULL)
     {
         printAllExpression(node->left);
     }
-    printf("%s)", node->data);
+
+    printf("%s", node->data);
+    if(type == ALL)
+    {
+        printf(")");
+    }
+
     if(node->right != NULL)
     {
         printAllExpression(node->right);
@@ -237,19 +246,29 @@ int printAllExpression(node_t* node)
 
 //=========================================================================
 
-int getG(char* str)
+node_t* makeAST(char* str)
 {
-    s = str;
+    CHECK(str != NULL, NULL);
 
-    int val = getE();
-    CHECK(*s == '\0', DIFF_ERROR);
+    char* s = str;
+    node_t* root = getG(s);
 
-    return val;
+    return root;
 }
 
 //-------------------------------------------------------------------
 
-int getN()
+node_t* getG(char* s)
+{
+    node_t* val = getE(s);
+    CHECK(*s == '\0', NULL);
+
+    node_t* val;
+}
+
+//-------------------------------------------------------------------
+
+node_t* getN(char* s)
 {
     int val = 0;
     char* sOld = s;
@@ -259,30 +278,30 @@ int getN()
         val = (val * 10) + (*s - '0');
         ++s;
     }
-    CHECK(s > sOld, DIFF_ERROR);
+    CHECK(s > sOld, NULL);
 
-    return val;
+    return createNum(val);
 }
 
 //-------------------------------------------------------------------
 
-int getE()
+node_t* getE(char* s)
 {
-    int val = getT();
+    node_t* val = getT(s);
 
     while((*s == '+') || (*s == '-'))
     {
         char op = *s;
         ++s;
 
-        int val_2 = getT();
+        node_t* val_2 = getT(s);
         if(op == '+')
         {
-            val += val_2;
+            val = Add(val, val_2);
         }
         else
         {
-            val -= val_2;
+            val = Sub(val, val_2);
         }
     }
 
@@ -291,23 +310,23 @@ int getE()
 
 //-------------------------------------------------------------------
 
-int getT()
+node_t* getT(char* s)
 {
-    int val = getP();
+    node_t* val = getP(s);
 
     while((*s == '*') || (*s == '/'))
     {
         char op = *s;
         ++s;
 
-        int val_2 = getP();
+        node_t* val_2 = getP(s);
         if(op == '*')
         {
-            val *= val_2;
+            val = Mul(val, val_2);
         }
         else
         {
-            val /= val_2;
+            val = Div(val, val_2);
         }
     }
 
@@ -316,19 +335,19 @@ int getT()
 
 //-------------------------------------------------------------------
 
-int getP()
+node_t* getP(char* s)
 {
-    int val = 0;
+    node_t* val = 0;
     if(*s == '(')
     {
         ++s;
-        val = getE();
-        CHECK(*s == ')', DIFF_ERROR);
+        val = getE(s);
+        CHECK(*s == ')', NULL);
         ++s;
     }
     else
     {
-        val = getN();
+        val = getN(s);
     }
 
     return val;

@@ -12,7 +12,7 @@ int treeCtor(tree_t* tree)
     CHECK(tree !=  NULL, ERR_TREE_NULL_PTR);
 
     tree->root = NULL;
-    tree->size = 0;
+    tree->status = TREE_SUCCESS;
 
     return TREE_SUCCESS;
 }
@@ -75,7 +75,7 @@ int treeDtor(tree_t* tree)
 
     treeNodeDtor(tree->root);
     tree->root = NULL;
-    tree->size = SIZE_MAX;
+    tree->status = TREE_ERROR;
 
     return TREE_SUCCESS;
 }
