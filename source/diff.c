@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include "diff.h"
 #include "diff_tree.h"
 #include "debug.h"
@@ -34,7 +35,7 @@ node_t* differentiate(node_t* node)
             return Div(Sub(Mul(dL, cR), Mul(cL, dR)), Pow(cR, createNum(2)));
 
         case OP_POW:
-            return Mul(Pow(cL, Sub(cR, createNum(1))), cR);
+            return Mul(Mul(Pow(cL, Sub(cR, createNum(1))), cR), dL);
 
         case OP_SIN:
             return Mul(Cos(cR), dR);
@@ -55,6 +56,53 @@ node_t* differentiate(node_t* node)
     default:
         break;
     }
+}
+
+//=========================================================================
+
+void convolveConst(node_t* node)
+{
+    if((node->type == OP) && (isNum(node->left)) && (isNum(node->right)))
+    {
+        node->type = NUM;
+        switch (node->data.opValue)
+        {
+        case OP_ADD:
+            double val = getVal(node->left) + getVal(node->right);
+            node->data.dblValue = val;
+
+        case OP_SUB:
+            double val = getVal(node->left) - getVal(node->right);
+            node->data.dblValue = val;
+
+        case OP_MUL:
+            double val = getVal(node->left) * getVal(node->right);
+            node->data.dblValue = val;
+
+        case OP_DIV:
+            double val = getVal(node->left) / getVal(node->right);
+            node->data.dblValue = val;
+        }
+
+        treeNodeDtor(node->left);
+        treeNodeDtor(node->right);
+    }
+
+    if(node->left != NULL)
+    {
+        convolveConst(node->left);
+    }
+    if(node->right != NULL)
+    {
+        convolveConst(node->right);
+    }
+}
+
+//=========================================================================
+
+void convolveNeutral(node_t* node)
+{
+
 }
 
 //=========================================================================
@@ -353,4 +401,26 @@ node_t* getP(char* s)
     return val;
 }
 
-//-------------------------------------------------------------------
+//=========================================================================
+
+int isNum(node_t* node)
+{
+    return(node->type == NUM);
+}
+
+int isVar(node_t* node)
+{
+    return(node->type == VAR);
+}
+
+int isOp(node_t* node)
+{
+    return(node->type == OP);
+}
+
+double getVal(node_t* node)
+{
+    return(node->data.dblValue);
+}
+
+//=========================================================================

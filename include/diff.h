@@ -14,6 +14,8 @@ const static double EPSILON = 1e-6;
 #define cL node->left
 #define cR node->right
 
+
+
 //=========================================================================
 
 enum differentiator_codes
@@ -42,6 +44,8 @@ node_t* Pow(node_t* node, node_t* power);
 node_t* Sin(node_t* node);
 node_t* Cos(node_t* node);
 node_t* Exp(node_t* node);
+void convolveConst(node_t* node);
+void convolveNeutral(node_t* node);
 int dump(tree_t* tree);
 void dumpLaTeX(FILE* file, const node_t* node);
 int printExpression(node_t* node, int type);
