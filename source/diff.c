@@ -102,7 +102,42 @@ void convolveConst(node_t* node)
 
 void convolveNeutral(node_t* node)
 {
+    if(node->left != NULL)
+    {
+        convolveNeutral(node->left);
+    }
+    if(node->right != NULL)
+    {
+        convolveNeutral(node->right);
+    }
 
+    if(isOP(OP_MUL) && (isZERO(node->left) || isZERO(node->right)))
+    {
+        node->type = NUM;
+        node->data.dblValue = 0;
+
+        treeNodeDtor(node->left);
+        treeNodeDtor(node->right);
+    }
+    if(isOP(OP_POW) && (isZERO(node->left) || isZERO(node->right)))
+    {
+        node->type = NUM;
+        node->data.dblValue = 1;
+
+        treeNodeDtor(node->left);
+        treeNodeDtor(node->right);
+    }
+
+    if((isOP(OP_MUL) || isOP(OP_DIV) || isOP(OP_POW)) && isONE(node->left))
+    {
+        treeNodeDtor(node->left);
+        node = node->right;
+    }
+    if((isOP(OP_MUL) || isOP(OP_DIV) || isOP(OP_POW)) && isONE(node->right))
+    {
+        treeNodeDtor(node->right);
+        node = node->left;
+    }
 }
 
 //=========================================================================
@@ -421,6 +456,24 @@ int isOp(node_t* node)
 double getVal(node_t* node)
 {
     return(node->data.dblValue);
+}
+
+int isZERO(node_t* node)
+{
+    if((node->type == NUM) && (node->data.dblValue == 0))
+    {
+        return true;
+    }
+    return false;
+}
+
+int isONE(node_t* node)
+{
+    if((node->type == NUM) && (node->data.dblValue == 1))
+    {
+        return true;
+    }
+    return false;
 }
 
 //=========================================================================

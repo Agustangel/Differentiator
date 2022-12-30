@@ -14,7 +14,8 @@ const static double EPSILON = 1e-6;
 #define cL node->left
 #define cR node->right
 
-
+#define isOP(option)               \
+    (node->data.opValue == option) \
 
 //=========================================================================
 
