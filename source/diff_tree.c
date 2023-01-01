@@ -127,15 +127,16 @@ int dumpGraphNode(node_t* node, FILE* dot_out)
     CHECK(node    !=  NULL, ERR_TREE_NULL_PTR);
     CHECK(dot_out !=  NULL, ERR_TREE_BAD_FILE);
 
-    switch (node->type)
+    switch(node->type)
     {
     case NUM:
-        fprintf(dot_out, "\n\t\t\"%lg\"[shape = \"ellipse\", color=\"#900000\", style=\"filled\", \
-                           fillcolor = \"#D0FDFF\"];\n", node->data.dblValue);
+        fprintf(dot_out, "\n\t\t\"%lg_%d\"[shape = \"ellipse\", label = \"%lg\", color=\"#900000\", style=\"filled\", \
+                           fillcolor = \"#D0FDFF\"];\n", node->data.dblValue, number, node->data.dblValue);
+        ++number;
         break;
 
     case VAR:
-        fprintf(dot_out, "\n\t\t\"%c%d\"[shape = \"ellipse\", label = \"x\", color=\"#900000\", style=\"filled\", \
+        fprintf(dot_out, "\n\t\t\"%c_%d\"[shape = \"ellipse\", label = \"x\", color=\"#900000\", style=\"filled\", \
                            fillcolor = \"#D0FDFF\"];\n", *node->data.varValue, number);
         ++number;
         break;
@@ -147,28 +148,28 @@ int dumpGraphNode(node_t* node, FILE* dot_out)
             break;
 
         case OP_ADD:
-            fprintf(dot_out, "\n\t\t\"+\"[shape = \"ellipse\", color=\"#900000\", \
-                               style=\"filled\", fillcolor = \"#D0FDFF\"];\n");
+            fprintf(dot_out, "\n\t\t\"+_%p\"[shape = \"ellipse\", label = \"+\", color=\"#900000\", \
+                               style=\"filled\", fillcolor = \"#D0FDFF\"];\n", node);
             break;
 
         case OP_SUB:
-            fprintf(dot_out, "\n\t\t\"-\"[shape = \"ellipse\", color=\"#900000\", \
-                               style=\"filled\", fillcolor = \"#D0FDFF\"];\n");
+            fprintf(dot_out, "\n\t\t\"-_%p\"[shape = \"ellipse\", label = \"-\", color=\"#900000\", \
+                               style=\"filled\", fillcolor = \"#D0FDFF\"];\n", node);
             break;
 
         case OP_MUL:
-            fprintf(dot_out, "\n\t\t\"*\"[shape = \"ellipse\", color=\"#900000\", \
-                               style=\"filled\", fillcolor = \"#D0FDFF\"];\n");
+            fprintf(dot_out, "\n\t\t\"*_%p\"[shape = \"ellipse\", label = \"*\", color=\"#900000\", \
+                               style=\"filled\", fillcolor = \"#D0FDFF\"];\n", node);
             break;
 
         case OP_DIV:
-            fprintf(dot_out, "\n\t\t\"/\"[shape = \"ellipse\", color=\"#900000\", \
-                               style=\"filled\", fillcolor = \"#D0FDFF\"];\n");
+            fprintf(dot_out, "\n\t\t\"/_%p\"[shape = \"ellipse\", label = \"/\", color=\"#900000\", \
+                               style=\"filled\", fillcolor = \"#D0FDFF\"];\n", node);
             break;
 
         case OP_POW:
-            fprintf(dot_out, "\n\t\t\"^\"[shape = \"ellipse\", color=\"#900000\", \
-                               style=\"filled\", fillcolor = \"#D0FDFF\"];\n");
+            fprintf(dot_out, "\n\t\t\"^_%p\"[shape = \"ellipse\", label = \"^\", color=\"#900000\", \
+                               style=\"filled\", fillcolor = \"#D0FDFF\"];\n", node);
             break;
 
         default:
@@ -177,12 +178,12 @@ int dumpGraphNode(node_t* node, FILE* dot_out)
 
         if(node->left != NULL)
         {
-            fprintfConnection(node->left, node->data.opValue, dot_out);
+            fprintfConnection(node, node->left, node->data.opValue, dot_out);
             dumpGraphNode(node->left, dot_out);
         }
         if(node->right != NULL)
         {
-            fprintfConnection(node->right, node->data.opValue, dot_out);
+            fprintfConnection(node, node->right, node->data.opValue, dot_out);
             dumpGraphNode(node->right, dot_out);
         }
         break;
@@ -196,7 +197,7 @@ int dumpGraphNode(node_t* node, FILE* dot_out)
 
 //=========================================================================
 
-int fprintfConnection(node_t* node, int operation, FILE* dot_out)
+int fprintfConnection(node_t* node_prev, node_t* node, int operation, FILE* dot_out)
 {
     CHECK(node    !=  NULL, ERR_TREE_NULL_PTR);
     CHECK(dot_out !=  NULL, ERR_TREE_BAD_FILE);
@@ -207,23 +208,23 @@ int fprintfConnection(node_t* node, int operation, FILE* dot_out)
         switch(operation)
         {
         case OP_ADD:
-            fprintf(dot_out, "\t\t\"+\"->\"%lg\";\n", node->data.dblValue);
+            fprintf(dot_out, "\t\t\"+_%p\"->\"%lg_%d\";\n", node_prev, node->data.dblValue, number);
             break;
         
         case OP_SUB:
-            fprintf(dot_out, "\t\t\"-\"->\"%lg\";\n", node->data.dblValue);
+            fprintf(dot_out, "\t\t\"-_%p\"->\"%lg_%d\";\n", node_prev, node->data.dblValue, number);
             break;
 
         case OP_MUL:
-            fprintf(dot_out, "\t\t\"*\"->\"%lg\";\n", node->data.dblValue);
+            fprintf(dot_out, "\t\t\"*_%p\"->\"%lg_%d\";\n", node_prev, node->data.dblValue, number);
             break;
 
         case OP_DIV:
-            fprintf(dot_out, "\t\t\"/\"->\"%lg\";\n", node->data.dblValue);
+            fprintf(dot_out, "\t\t\"/_%p\"->\"%lg_%d\";\n", node_prev, node->data.dblValue, number);
             break;
 
         case OP_POW:
-            fprintf(dot_out, "\t\t\"^\"->\"%lg\";\n", node->data.dblValue);
+            fprintf(dot_out, "\t\t\"^_%p\"->\"%lg_%d\";\n", node_prev, node->data.dblValue, number);
             break;
 
         default:
@@ -235,23 +236,23 @@ int fprintfConnection(node_t* node, int operation, FILE* dot_out)
         switch(operation)
         {
         case OP_ADD:
-            fprintf(dot_out, "\t\t\"+\"->\"%c%d\";\n", *node->data.varValue, number);            
+            fprintf(dot_out, "\t\t\"+_%p\"->\"%c_%d\";\n", node_prev, *node->data.varValue, number);            
             break;
         
         case OP_SUB:
-            fprintf(dot_out, "\t\t\"-\"->\"%c%d\";\n", *node->data.varValue, number);
+            fprintf(dot_out, "\t\t\"-_%p\"->\"%c_%d\";\n", node_prev, *node->data.varValue, number);
             break;
 
         case OP_MUL:
-            fprintf(dot_out, "\t\t\"*\"->\"%c%d\";\n", *node->data.varValue, number); 
+            fprintf(dot_out, "\t\t\"*_%p\"->\"%c_%d\";\n", node_prev, *node->data.varValue, number); 
             break;
 
         case OP_DIV:
-            fprintf(dot_out, "\t\t\"/\"->\"%c%d\";\n", *node->data.varValue, number); 
+            fprintf(dot_out, "\t\t\"/_%p\"->\"%c_%d\";\n", node_prev, *node->data.varValue, number); 
             break;
 
         case OP_POW:
-            fprintf(dot_out, "\t\t\"^\"->\"%c%d\";\n", *node->data.varValue, number); 
+            fprintf(dot_out, "\t\t\"^_%p\"->\"%c_%d\";\n", node_prev, *node->data.varValue, number); 
             break;
 
         default:
@@ -263,23 +264,23 @@ int fprintfConnection(node_t* node, int operation, FILE* dot_out)
         switch(operation)
         {
         case OP_ADD:
-            fprintf(dot_out, "\t\t\"+\"->");
+            fprintf(dot_out, "\t\t\"+_%p\"->", node_prev);
             break;
         
         case OP_SUB:
-            fprintf(dot_out, "\t\t\"-\"->");
+            fprintf(dot_out, "\t\t\"-_%p\"->", node_prev);
             break;
 
         case OP_MUL:
-            fprintf(dot_out, "\t\t\"*\"->");
+            fprintf(dot_out, "\t\t\"*_%p\"->", node_prev);
             break;
 
         case OP_DIV:
-            fprintf(dot_out, "\t\t\"/\"->");
+            fprintf(dot_out, "\t\t\"/_%p\"->", node_prev);
             break;
 
         case OP_POW:
-            fprintf(dot_out, "\t\t\"^\"->");
+            fprintf(dot_out, "\t\t\"^_%p\"->", node_prev);
             break;
 
         default:
@@ -289,23 +290,23 @@ int fprintfConnection(node_t* node, int operation, FILE* dot_out)
         switch(node->data.opValue)
         {
         case OP_ADD:
-            fprintf(dot_out, "\"+\";\n");
+            fprintf(dot_out, "\"+_%p\";\n", node);
             break;
         
         case OP_SUB:
-            fprintf(dot_out, "\"-\";\n");
+            fprintf(dot_out, "\"-_%p\";\n", node);
             break;
 
         case OP_MUL:
-            fprintf(dot_out, "\"*\";\n");
+            fprintf(dot_out, "\"*_%p\";\n", node);
             break;
 
         case OP_DIV:
-            fprintf(dot_out, "\"/\";\n");
+            fprintf(dot_out, "\"/_%p\";\n", node);
             break;
 
         case OP_POW:
-            fprintf(dot_out, "\"^\";\n");
+            fprintf(dot_out, "\"^_%p\";\n", node);
             break;
 
         default:

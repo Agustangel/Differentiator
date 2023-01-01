@@ -23,9 +23,9 @@ int main()
     fclose(text);
 
     node_t* root = makeAST(str);
-    //node_t* diff_root = differentiate(root);
+    node_t* diff_root = differentiate(root);
 
-    tree.root = root;
+    tree.root = diff_root;
     dumpGraphTree(&tree);
 
     return 0;

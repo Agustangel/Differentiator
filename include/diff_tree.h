@@ -106,4 +106,4 @@ int treeDtor(tree_t* tree);
 void treeNodeDtor(node_t* node);
 int dumpGraphTree(tree_t* tree);
 int dumpGraphNode(node_t* node, FILE* dot_out);
-int fprintfConnection(node_t* node, int operation, FILE* dot_out);
+int fprintfConnection(node_t* node_prev, node_t* node, int operation, FILE* dot_out);
