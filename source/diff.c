@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <ctype.h>
 #include "diff.h"
 #include "diff_tree.h"
 #include "debug.h"
@@ -401,17 +402,27 @@ node_t* getG()
 
 node_t* getN()
 {
-    int val = 0;
-    char* sOld = s;
-
-    while((*s >= '0') && (*s <= '9'))
+    if(isdigit(*s))
     {
-        val = (val * 10) + (*s - '0');
-        ++s;
-    }
-    CHECK(s > sOld, NULL);
+        int val = 0;
+        char* sOld = s;
 
-    return createNum(val);
+        while((*s >= '0') && (*s <= '9'))
+        {
+            val = (val * 10) + (*s - '0');
+            ++s;
+        }
+        CHECK(s > sOld, NULL);
+
+        return createNum(val);
+    }
+    else
+    {
+        const char* elem = s;
+        ++s;
+
+        return createVar(elem);
+    }
 }
 
 //-------------------------------------------------------------------
@@ -425,7 +436,7 @@ node_t* getE()
         char op = *s;
         ++s;
 
-        node_t* val_2 = getT(s);
+        node_t* val_2 = getT();
         if(op == '+')
         {
             val = Add(val, val_2);
@@ -443,14 +454,14 @@ node_t* getE()
 
 node_t* getT()
 {
-    node_t* val = getP();
+    node_t* val = getL();
 
     while((*s == '*') || (*s == '/'))
     {
         char op = *s;
         ++s;
 
-        node_t* val_2 = getP(s);
+        node_t* val_2 = getL();
         if(op == '*')
         {
             val = Mul(val, val_2);
@@ -472,14 +483,31 @@ node_t* getP()
     if(*s == '(')
     {
         ++s;
-        val = getE(s);
+        val = getE();
         CHECK(*s == ')', NULL);
         ++s;
     }
     else
     {
-        val = getN(s);
+        val = getN();
     }
+
+    return val;
+}
+
+//-------------------------------------------------------------------
+
+node_t* getL()
+{
+    node_t* val = getP();
+
+    if(*s == '^')
+    {
+        ++s;
+        node_t* power = getP();
+        val = Pow(val, power);
+    }
+    CHECK(*s != '^', NULL);
 
     return val;
 }
@@ -532,11 +560,4 @@ int isONE(node_t* node)
         return true;
     }
     return false;
-}
-
-//=========================================================================
-
-char* getExpression(FILE* text)
-{
-    
 }

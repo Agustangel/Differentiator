@@ -23,10 +23,10 @@ int main()
     fclose(text);
 
     node_t* root = makeAST(str);
+    //node_t* diff_root = differentiate(root);
+
     tree.root = root;
     dumpGraphTree(&tree);
 
-    //node_t* diff_root = differentiate(root);
-    
     return 0;
 }

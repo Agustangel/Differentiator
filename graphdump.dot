@@ -3,16 +3,22 @@ digraph {
 	edge[color = "#190970", fontsize = 11];
 
 		"+"[shape = "ellipse", color="#900000",                                style="filled", fillcolor = "#D0FDFF"];
-		"+"->"10";
+		"+"->"^";
 
-		"10"[shape = "ellipse", color="#900000", style="filled",                            fillcolor = "#D0FDFF"];
+		"^"[shape = "ellipse", color="#900000",                                style="filled", fillcolor = "#D0FDFF"];
+		"^"->"x1";
+
+		"x1"[shape = "ellipse", label = "x", color="#900000", style="filled",                            fillcolor = "#D0FDFF"];
+		"^"->"2";
+
+		"2"[shape = "ellipse", color="#900000", style="filled",                            fillcolor = "#D0FDFF"];
 		"+"->"*";
 
 		"*"[shape = "ellipse", color="#900000",                                style="filled", fillcolor = "#D0FDFF"];
-		"*"->"5";
+		"*"->"6";
 
-		"5"[shape = "ellipse", color="#900000", style="filled",                            fillcolor = "#D0FDFF"];
-		"*"->"2";
+		"6"[shape = "ellipse", color="#900000", style="filled",                            fillcolor = "#D0FDFF"];
+		"*"->"x2";
 
-		"2"[shape = "ellipse", color="#900000", style="filled",                            fillcolor = "#D0FDFF"];
+		"x2"[shape = "ellipse", label = "x", color="#900000", style="filled",                            fillcolor = "#D0FDFF"];
 }

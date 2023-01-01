@@ -57,6 +57,7 @@ node_t* getE();
 node_t* getT();
 node_t* getN();
 node_t* getP();
+node_t* getL();
 int isNum(node_t* node);
 int isVar(node_t* node);
 int isOp(node_t* node);

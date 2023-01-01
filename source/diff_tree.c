@@ -6,6 +6,7 @@
 #include "debug.h"
 
 
+int number = 1;
 //=========================================================================
 int treeCtor(tree_t* tree)
 {
@@ -134,8 +135,9 @@ int dumpGraphNode(node_t* node, FILE* dot_out)
         break;
 
     case VAR:
-        fprintf(dot_out, "\n\t\t\"%c\"[shape = \"ellipse\", color=\"#900000\", style=\"filled\", \
-                           fillcolor = \"#D0FDFF\"];\n", *node->data.varValue);
+        fprintf(dot_out, "\n\t\t\"%c%d\"[shape = \"ellipse\", label = \"x\", color=\"#900000\", style=\"filled\", \
+                           fillcolor = \"#D0FDFF\"];\n", *node->data.varValue, number);
+        ++number;
         break;
 
     case OP:
@@ -161,6 +163,11 @@ int dumpGraphNode(node_t* node, FILE* dot_out)
 
         case OP_DIV:
             fprintf(dot_out, "\n\t\t\"/\"[shape = \"ellipse\", color=\"#900000\", \
+                               style=\"filled\", fillcolor = \"#D0FDFF\"];\n");
+            break;
+
+        case OP_POW:
+            fprintf(dot_out, "\n\t\t\"^\"[shape = \"ellipse\", color=\"#900000\", \
                                style=\"filled\", fillcolor = \"#D0FDFF\"];\n");
             break;
 
@@ -228,28 +235,29 @@ int fprintfConnection(node_t* node, int operation, FILE* dot_out)
         switch(operation)
         {
         case OP_ADD:
-            fprintf(dot_out, "\t\t\"+\"->\"%c\";\n", *node->data.varValue);
+            fprintf(dot_out, "\t\t\"+\"->\"%c%d\";\n", *node->data.varValue, number);            
             break;
         
         case OP_SUB:
-            fprintf(dot_out, "\t\t\"-\"->\"%c\";\n", *node->data.varValue);
+            fprintf(dot_out, "\t\t\"-\"->\"%c%d\";\n", *node->data.varValue, number);
             break;
 
         case OP_MUL:
-            fprintf(dot_out, "\t\t\"*\"->\"%c\";\n", *node->data.varValue);
+            fprintf(dot_out, "\t\t\"*\"->\"%c%d\";\n", *node->data.varValue, number); 
             break;
 
         case OP_DIV:
-            fprintf(dot_out, "\t\t\"/\"->\"%c\";\n", *node->data.varValue);
+            fprintf(dot_out, "\t\t\"/\"->\"%c%d\";\n", *node->data.varValue, number); 
             break;
 
         case OP_POW:
-            fprintf(dot_out, "\t\t\"^\"->\"%c\";\n", *node->data.varValue);
+            fprintf(dot_out, "\t\t\"^\"->\"%c%d\";\n", *node->data.varValue, number); 
             break;
 
         default:
             break;
         }
+        break;
 
     case OP:
         switch(operation)
