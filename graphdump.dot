@@ -1,0 +1,18 @@
+digraph {
+	node[shape = "cube", color = "#800000", fontsize = 15, style = "filled", fillcolor = "#88CEFA"];
+	edge[color = "#190970", fontsize = 11];
+
+		"+"[shape = "ellipse", color="#900000",                                style="filled", fillcolor = "#D0FDFF"];
+		"+"->"10";
+
+		"10"[shape = "ellipse", color="#900000", style="filled",                            fillcolor = "#D0FDFF"];
+		"+"->"*";
+
+		"*"[shape = "ellipse", color="#900000",                                style="filled", fillcolor = "#D0FDFF"];
+		"*"->"5";
+
+		"5"[shape = "ellipse", color="#900000", style="filled",                            fillcolor = "#D0FDFF"];
+		"*"->"2";
+
+		"2"[shape = "ellipse", color="#900000", style="filled",                            fillcolor = "#D0FDFF"];
+}

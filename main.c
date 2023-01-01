@@ -2,7 +2,8 @@
 #include "diff.h"
 #include "diff_tree.h"
 #include "debug.h"
-
+#include <stdlib.h>
+#include <onegin.h>
 
 
 int main()
@@ -10,14 +11,22 @@ int main()
     tree_t tree;
     treeCtor(&tree);
 
-    char str[80];
-    scanf("%s", str);
+    FILE* text = fopen("expression.txt", "r");
+    CHECK(text != NULL, ERR_DIFF_NULL_PTR);
+
+    int count = count_symbols(text);
+    CHECK(count >= 0, ERR_DIFF_NEGATIVE_COUNT);
+
+    char* str = (char*) calloc(count, sizeof(char));
+    fill_buffer(text, str, sizeof(char), count);
+
+    fclose(text);
 
     node_t* root = makeAST(str);
-    //tree.root = root;
-    //dumpGraphTree(&tree);
+    tree.root = root;
+    dumpGraphTree(&tree);
 
-    node_t* diff_root = differentiate(root);
+    //node_t* diff_root = differentiate(root);
     
     return 0;
 }

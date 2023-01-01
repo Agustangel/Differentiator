@@ -5,7 +5,7 @@
 #include "debug.h"
 
 
-
+char* s = NULL;
 //=========================================================================
 node_t* differentiate(node_t* node)
 {
@@ -20,7 +20,7 @@ node_t* differentiate(node_t* node)
         return createNum(1);
 
     case OP:
-        switch (node->data.opValue)
+        switch(node->data.opValue)
         {
         case OP_ADD:
             return Add(dL, dR);
@@ -62,25 +62,29 @@ node_t* differentiate(node_t* node)
 
 void convolveConst(node_t* node)
 {
+    CHECK(node != NULL, ;);
+
     if((node->type == OP) && (isNum(node->left)) && (isNum(node->right)))
     {
         node->type = NUM;
-        switch (node->data.opValue)
+        
+        double val = 0;
+        switch(node->data.opValue)
         {
         case OP_ADD:
-            double val = getVal(node->left) + getVal(node->right);
+            val = getVal(node->left) + getVal(node->right);
             node->data.dblValue = val;
 
         case OP_SUB:
-            double val = getVal(node->left) - getVal(node->right);
+            val = getVal(node->left) - getVal(node->right);
             node->data.dblValue = val;
 
         case OP_MUL:
-            double val = getVal(node->left) * getVal(node->right);
+            val = getVal(node->left) * getVal(node->right);
             node->data.dblValue = val;
 
         case OP_DIV:
-            double val = getVal(node->left) / getVal(node->right);
+            val = getVal(node->left) / getVal(node->right);
             node->data.dblValue = val;
         }
 
@@ -102,6 +106,8 @@ void convolveConst(node_t* node)
 
 void convolveNeutral(node_t* node)
 {
+    CHECK(node != NULL, ;);
+
     if(node->left != NULL)
     {
         convolveNeutral(node->left);
@@ -219,6 +225,8 @@ node_t* Exp(node_t* node)
 
 int dump(tree_t* tree)
 {
+    CHECK(tree != NULL, ERR_TREE_NULL_PTR);
+
     FILE* outfile = fopen("texdump.tex", "a");
     CHECK(outfile != NULL, ERR_DIFF_NULL_PTR);
 
@@ -238,63 +246,63 @@ void dumpLaTeX(FILE* file, const node_t* node)
 
     switch (node->type)
     {
-        case NUM:
-            fprintf(file, "%lg", node->data.dblValue);
-            return;
+    case NUM:
+        fprintf(file, "%lg", node->data.dblValue);
+        return;
 
-        case VAR:
-            fprintf(file, "%c", *node->data.varValue);
-            return;
+    case VAR:
+        fprintf(file, "%c", *node->data.varValue);
+        return;
 
-        case OP:
-            if ((node->left == NULL) || (node->right == NULL))
-            {
-                fprintf(file, "\\text{error}");
-                return;    
-            }
+    case OP:
+        if ((node->left == NULL) || (node->right == NULL))
+        {
+            fprintf(file, "\\text{error}");
+            return;    
+        }
 
-            fprintf(file, "(");
-            switch(node->data.opValue)
-            {
-                case OP_ERROR:
-                    fprintf(file, " \\text{error} ");
-                    break;
+        fprintf(file, "(");
+        switch(node->data.opValue)
+        {
+        case OP_ERROR:
+            fprintf(file, " \\text{error} ");
+            break;
 
-                case OP_ADD:
-                    dumpLaTeX(file, node->left);
-                    fprintf(file, " + ");
-                    dumpLaTeX(file, node->right);
-                    break;
+        case OP_ADD:
+            dumpLaTeX(file, node->left);
+            fprintf(file, " + ");
+            dumpLaTeX(file, node->right);
+            break;
 
-                case OP_SUB:
-                    dumpLaTeX(file, node->left);
-                    fprintf(file, " - ");
-                    dumpLaTeX(file, node->right);
-                    break;
+        case OP_SUB:
+            dumpLaTeX(file, node->left);
+            fprintf(file, " - ");
+            dumpLaTeX(file, node->right);
+            break;
 
-                case OP_MUL:
-                    dumpLaTeX(file, node->left);
-                    fprintf(file, " \\cdot ");
-                    dumpLaTeX(file, node->right);
-                    break;
+        case OP_MUL:
+            dumpLaTeX(file, node->left);
+            fprintf(file, " \\cdot ");
+            dumpLaTeX(file, node->right);
+            break;
 
-                case OP_DIV:
-                    fprintf(file, " \\frac{ ");
-                    dumpLaTeX(file, node->left);
-                    fprintf(file, "}{");
-                    dumpLaTeX(file, node->right);
-                    fprintf(file, "} ");
-                    break;
+        case OP_DIV:
+            fprintf(file, " \\frac{ ");
+            dumpLaTeX(file, node->left);
+            fprintf(file, "}{");
+            dumpLaTeX(file, node->right);
+            fprintf(file, "} ");
+            break;
 
-                default:
-                    fprintf(file, "\\text{error}");
-            }
-            fprintf(file, ")");
-            return;
-        
         default:
             fprintf(file, "\\text{error}");
-            return;
+        }
+        fprintf(file, ")");
+        return;
+    
+    default:
+        fprintf(file, "\\text{error}");
+        return;
     }
 }
 
@@ -310,10 +318,49 @@ int printExpression(node_t* node, int type)
     }
     if(node->left != NULL)
     {
-        printAllExpression(node->left);
+        printExpression(node->left, type);
     }
 
-    printf("%s", node->data);
+    if(node->type == VAR)
+    {
+        printf("%s", node->data.varValue);
+    }
+    if(node->type == NUM)
+    {
+        printf("%lf", node->data.dblValue);
+    }
+    if(node->type == OP)
+    {
+        switch (node->data.opValue)
+        {
+        case OP_ADD:
+            printf("+");
+
+        case OP_SUB:
+            printf("-");
+
+        case OP_MUL:
+            printf("*");
+
+        case OP_DIV:
+            printf("/");
+
+        case OP_POW:
+            printf("^");
+
+        case OP_SIN:
+            printf("sin");
+
+        case OP_COS:
+            printf("cos");
+        
+        case OP_EXP:
+            printf("exp");
+
+        case OP_LN:
+            printf("ln");
+        }        
+    }
     if(type == ALL)
     {
         printf(")");
@@ -321,7 +368,7 @@ int printExpression(node_t* node, int type)
 
     if(node->right != NULL)
     {
-        printAllExpression(node->right);
+        printExpression(node->right, type);
     }      
 
     return DIFF_SUCCESS;
@@ -332,26 +379,27 @@ int printExpression(node_t* node, int type)
 node_t* makeAST(char* str)
 {
     CHECK(str != NULL, NULL);
+    s = str;
 
-    char* s = str;
-    node_t* root = getG(s);
+    node_t* root = getG();
+    CHECK(root != NULL, NULL);
 
     return root;
 }
 
 //-------------------------------------------------------------------
 
-node_t* getG(char* s)
+node_t* getG()
 {
-    node_t* val = getE(s);
+    node_t* val = getE();
     CHECK(*s == '\0', NULL);
 
-    node_t* val;
+    return val;
 }
 
 //-------------------------------------------------------------------
 
-node_t* getN(char* s)
+node_t* getN()
 {
     int val = 0;
     char* sOld = s;
@@ -368,9 +416,9 @@ node_t* getN(char* s)
 
 //-------------------------------------------------------------------
 
-node_t* getE(char* s)
+node_t* getE()
 {
-    node_t* val = getT(s);
+    node_t* val = getT();
 
     while((*s == '+') || (*s == '-'))
     {
@@ -393,9 +441,9 @@ node_t* getE(char* s)
 
 //-------------------------------------------------------------------
 
-node_t* getT(char* s)
+node_t* getT()
 {
-    node_t* val = getP(s);
+    node_t* val = getP();
 
     while((*s == '*') || (*s == '/'))
     {
@@ -418,7 +466,7 @@ node_t* getT(char* s)
 
 //-------------------------------------------------------------------
 
-node_t* getP(char* s)
+node_t* getP()
 {
     node_t* val = 0;
     if(*s == '(')
@@ -443,20 +491,28 @@ int isNum(node_t* node)
     return(node->type == NUM);
 }
 
+//-------------------------------------------------------------------
+
 int isVar(node_t* node)
 {
     return(node->type == VAR);
 }
+
+//-------------------------------------------------------------------
 
 int isOp(node_t* node)
 {
     return(node->type == OP);
 }
 
+//-------------------------------------------------------------------
+
 double getVal(node_t* node)
 {
     return(node->data.dblValue);
 }
+
+//-------------------------------------------------------------------
 
 int isZERO(node_t* node)
 {
@@ -466,6 +522,8 @@ int isZERO(node_t* node)
     }
     return false;
 }
+
+//-------------------------------------------------------------------
 
 int isONE(node_t* node)
 {
@@ -477,3 +535,8 @@ int isONE(node_t* node)
 }
 
 //=========================================================================
+
+char* getExpression(FILE* text)
+{
+    
+}

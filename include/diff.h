@@ -24,7 +24,8 @@ enum differentiator_codes
     DIFF_ERROR                = -1,
     DIFF_SUCCESS              =  0,
     ERR_DIFF_NULL_PTR         =  1,
-    ERR_DIFF_BAD_FILE         =  2
+    ERR_DIFF_BAD_FILE         =  2,
+    ERR_DIFF_NEGATIVE_COUNT   =  3,
     
 };
 
@@ -51,8 +52,14 @@ int dump(tree_t* tree);
 void dumpLaTeX(FILE* file, const node_t* node);
 int printExpression(node_t* node, int type);
 node_t* makeAST(char* str);
-node_t* getG(char* s);
-node_t* getE(char* s);
-node_t* getT(char* s);
-node_t* getN(char* s);
-node_t* getP(char* s);
+node_t* getG();
+node_t* getE();
+node_t* getT();
+node_t* getN();
+node_t* getP();
+int isNum(node_t* node);
+int isVar(node_t* node);
+int isOp(node_t* node);
+double getVal(node_t* node);
+int isZERO(node_t* node);
+int isONE(node_t* node);

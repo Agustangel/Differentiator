@@ -3,10 +3,6 @@
 #include <stdio.h>
 #include <stdint.h>
 
-
-#define _LEFT "YES"
-#define _RIGHT "NO"
-
 //=========================================================================
 
 enum tree_codes
@@ -110,4 +106,4 @@ int treeDtor(tree_t* tree);
 void treeNodeDtor(node_t* node);
 int dumpGraphTree(tree_t* tree);
 int dumpGraphNode(node_t* node, FILE* dot_out);
-int fprintfConnection(node_t* node, char* ANSW, FILE* dot_out);
+int fprintfConnection(node_t* node, int operation, FILE* dot_out);
