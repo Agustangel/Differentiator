@@ -265,6 +265,15 @@ node_t* Exp(node_t* node)
     return createNode(OP_EXP, NULL, node);
 }
 
+//-------------------------------------------------------------------
+
+node_t* Ln(node_t* node)
+{
+    CHECK(node != NULL, NULL);
+
+    return createNode(OP_LN, NULL, node);
+}
+
 //=========================================================================
 
 int dump(tree_t* tree)
@@ -557,8 +566,28 @@ node_t* getP()
 
 node_t* getL()
 {
-    node_t* val = getP();
+    if((*s == 'c') && (*(s + 1) == 'o') && (*(s + 2) == 's'))
+    {
+        s += 3;
+        return Cos(getP());
+    }
+    if((*s == 's') && (*(s + 1) == 'i') && (*(s + 2) == 'n'))
+    {
+        s += 3;
+        return Sin(getP());
+    }
+    if((*s == 'e') && (*(s + 1) == 'x') && (*(s + 2) == 'p'))
+    {
+        s += 3;
+        return Exp(getP());        
+    }
+    if((*s == 'l') && (*(s + 1) == 'n'))
+    {
+        s += 2;
+        return Ln(getP());        
+    }
 
+    node_t* val = getP();
     if(*s == '^')
     {
         ++s;
@@ -622,6 +651,19 @@ int isONE(node_t* node)
     CHECK(node != NULL, ERR_DIFF_NULL_PTR);
 
     if((node->type == NUM) && (node->data.dblValue == 1))
+    {
+        return true;
+    }
+    return false;
+}
+
+//-------------------------------------------------------------------
+
+int isSin(node_t* node)
+{
+    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
+
+    if((node->type == OP) && (node->data.opValue == OP_SIN))
     {
         return true;
     }

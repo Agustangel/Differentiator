@@ -55,6 +55,7 @@ node_t* copyNode(node_t* prev_node)
     case OP:
         node->type = OP;
         node->data.opValue = prev_node->data.opValue;
+        break;
 
     default:
         break;
@@ -103,8 +104,6 @@ node_t* createVar(const char* val)
 int treeDtor(tree_t* tree)
 {
     CHECK(tree !=  NULL, ERR_TREE_NULL_PTR);
-    //int verify = tree_verify(tree);
-    //CHECK(verify == TREE_SUCCESS, verify);
 
     treeNodeDtor(tree->root);
     tree->root = NULL;
@@ -202,6 +201,26 @@ int dumpGraphNode(node_t* node, FILE* dot_out)
                                style=\"filled\", fillcolor = \"#D0FDFF\"];\n", node);
             break;
 
+        case OP_SIN:
+            fprintf(dot_out, "\n\t\t\"sin_%p\"[shape = \"ellipse\", label = \"sin\", color=\"#900000\", \
+                               style=\"filled\", fillcolor = \"#D0FDFF\"];\n", node);
+            break;
+
+        case OP_COS:
+            fprintf(dot_out, "\n\t\t\"cos_%p\"[shape = \"ellipse\", label = \"cos\", color=\"#900000\", \
+                               style=\"filled\", fillcolor = \"#D0FDFF\"];\n", node);
+            break;
+
+        case OP_EXP:
+            fprintf(dot_out, "\n\t\t\"exp_%p\"[shape = \"ellipse\", label = \"exp\", color=\"#900000\", \
+                               style=\"filled\", fillcolor = \"#D0FDFF\"];\n", node);
+            break;
+
+        case OP_LN:
+            fprintf(dot_out, "\n\t\t\"ln_%p\"[shape = \"ellipse\", label = \"ln\", color=\"#900000\", \
+                               style=\"filled\", fillcolor = \"#D0FDFF\"];\n", node);
+            break;            
+
         default:
             break;
         }
@@ -257,6 +276,22 @@ int fprintfConnection(node_t* node_prev, node_t* node, int operation, FILE* dot_
             fprintf(dot_out, "\t\t\"^_%p\"->\"%lg_%p\";\n", node_prev, node->data.dblValue, node);
             break;
 
+        case OP_SIN:
+            fprintf(dot_out, "\t\t\"sin_%p\"->\"%lg_%p\";\n", node_prev, node->data.dblValue, node);
+            break;
+
+        case OP_COS:
+            fprintf(dot_out, "\t\t\"cos_%p\"->\"%lg_%p\";\n", node_prev, node->data.dblValue, node);
+            break;
+
+        case OP_EXP:
+            fprintf(dot_out, "\t\t\"exp_%p\"->\"%lg_%p\";\n", node_prev, node->data.dblValue, node);
+            break;
+
+        case OP_LN:
+            fprintf(dot_out, "\t\t\"ln_%p\"->\"%lg_%p\";\n", node_prev, node->data.dblValue, node);
+            break;
+
         default:
             break;
         }
@@ -283,6 +318,22 @@ int fprintfConnection(node_t* node_prev, node_t* node, int operation, FILE* dot_
 
         case OP_POW:
             fprintf(dot_out, "\t\t\"^_%p\"->\"%c_%p\";\n", node_prev, *node->data.varValue, node); 
+            break;
+
+        case OP_SIN:
+            fprintf(dot_out, "\t\t\"sin_%p\"->\"%c_%p\";\n", node_prev, *node->data.varValue, node);
+            break;
+
+        case OP_COS:
+            fprintf(dot_out, "\t\t\"cos_%p\"->\"%c_%p\";\n", node_prev, *node->data.varValue, node);
+            break;
+
+        case OP_EXP:
+            fprintf(dot_out, "\t\t\"exp_%p\"->\"%c_%p\";\n", node_prev, *node->data.varValue, node);
+            break;
+
+        case OP_LN:
+            fprintf(dot_out, "\t\t\"ln_%p\"->\"%c_%p\";\n", node_prev, *node->data.varValue, node);
             break;
 
         default:
@@ -313,6 +364,22 @@ int fprintfConnection(node_t* node_prev, node_t* node, int operation, FILE* dot_
             fprintf(dot_out, "\t\t\"^_%p\"->", node_prev);
             break;
 
+        case OP_SIN:
+            fprintf(dot_out, "\t\t\"sin_%p\"->", node_prev);
+            break;
+
+        case OP_COS:
+            fprintf(dot_out, "\t\t\"cos_%p\"->", node_prev);
+            break;
+
+        case OP_EXP:
+            fprintf(dot_out, "\t\t\"exp_%p\"->", node_prev);
+            break;
+
+        case OP_LN:
+            fprintf(dot_out, "\t\t\"ln_%p\"->", node_prev);
+            break;
+
         default:
             break;
         }
@@ -337,6 +404,22 @@ int fprintfConnection(node_t* node_prev, node_t* node, int operation, FILE* dot_
 
         case OP_POW:
             fprintf(dot_out, "\"^_%p\";\n", node);
+            break;
+
+        case OP_SIN:
+            fprintf(dot_out, "\"sin_%p\";\n", node);
+            break;
+
+        case OP_COS:
+            fprintf(dot_out, "\"cos_%p\";\n", node);
+            break;
+
+        case OP_EXP:
+            fprintf(dot_out, "\"exp_%p\";\n", node);
+            break;
+
+        case OP_LN:
+            fprintf(dot_out, "\"ln_%p\";\n", node);
             break;
 
         default:

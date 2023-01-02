@@ -46,6 +46,7 @@ node_t* Pow(node_t* node, node_t* power);
 node_t* Sin(node_t* node);
 node_t* Cos(node_t* node);
 node_t* Exp(node_t* node);
+node_t* Ln(node_t* node);
 void convolveConst(node_t* node);
 void convolveNeutral(node_t* node);
 int dump(tree_t* tree);
