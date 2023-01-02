@@ -27,9 +27,10 @@ int main()
     tree.root = diff_root;
 
     convolveConst(tree.root);
-    //convolveNeutral(tree.root);
+    convolveNeutral(tree.root);
 
     dumpGraphTree(&tree);
+    //dump(&tree);
 
     return 0;
 }

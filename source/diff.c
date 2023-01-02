@@ -30,25 +30,25 @@ node_t* differentiate(node_t* node)
             return Sub(dL, dR);
 
         case OP_MUL:
-            return Add(Mul(dL, cR), Mul(cL, dR));
+            return Add(Mul(dL, copyNode(cR)), Mul(copyNode(cL), dR));
 
         case OP_DIV:
-            return Div(Sub(Mul(dL, cR), Mul(cL, dR)), Pow(cR, createNum(2)));
+            return Div(Sub(Mul(dL, copyNode(cR)), Mul(copyNode(cL), dR)), Pow(copyNode(cR), createNum(2)));
 
         case OP_POW:
-            return Mul(Mul(Pow(cL, Sub(cR, createNum(1))), cR), dL);
+            return Mul(Mul(Pow(cL, Sub(copyNode(cR), createNum(1))), copyNode(cR)), dL);
 
         case OP_SIN:
-            return Mul(Cos(cR), dR);
+            return Mul(Cos(copyNode(cR)), dR);
 
         case OP_COS:
-            return Mul(Mul(Sin(cR), createNum(-1)), dR);
+            return Mul(Mul(Sin(copyNode(cR)), createNum(-1)), dR);
         
         case OP_EXP:
-            return Mul(Exp(cR), dR);
+            return Mul(Exp(copyNode(cR)), dR);
 
         case OP_LN:
-            return Mul(Div(createNum(1), cR), dR);
+            return Mul(Div(createNum(1), copyNode(cR)), dR);
 
         default:
             break;
@@ -64,11 +64,11 @@ node_t* differentiate(node_t* node)
 void convolveConst(node_t* node)
 {
     CHECK(node != NULL, ;);
-
+    
     if((node->type == OP) && (isNum(node->left)) && (isNum(node->right)))
     {
         node->type = NUM;
-        
+
         double val = 0;
         switch(node->data.opValue)
         {
@@ -92,9 +92,14 @@ void convolveConst(node_t* node)
             node->data.dblValue = val;
             break;
         }
+        node->data.opValue = 0;
 
         treeNodeDtor(node->left);
         treeNodeDtor(node->right);
+        node->left = NULL;
+        node->right = NULL;
+
+        return;
     }
 
     if(node->left != NULL)
@@ -129,6 +134,8 @@ void convolveNeutral(node_t* node)
 
         treeNodeDtor(node->left);
         treeNodeDtor(node->right);
+        node->left = NULL;
+        node->right = NULL;
     }
     if(isOP(OP_POW) && (isZERO(node->left) || isZERO(node->right)))
     {
@@ -137,16 +144,20 @@ void convolveNeutral(node_t* node)
 
         treeNodeDtor(node->left);
         treeNodeDtor(node->right);
+        node->left = NULL;
+        node->right = NULL;
     }
 
     if((isOP(OP_MUL) || isOP(OP_DIV) || isOP(OP_POW)) && isONE(node->left))
     {
         treeNodeDtor(node->left);
+        node->left = NULL;
         node = node->right;
     }
     if((isOP(OP_MUL) || isOP(OP_DIV) || isOP(OP_POW)) && isONE(node->right))
     {
         treeNodeDtor(node->right);
+        node->right = NULL;
         node = node->left;
     }
 }
@@ -235,9 +246,18 @@ int dump(tree_t* tree)
     FILE* outfile = fopen("texdump.tex", "a");
     CHECK(outfile != NULL, ERR_DIFF_NULL_PTR);
 
+    fprintf(outfile, "\\documentclass{article}\n"
+                 "\n"
+                 "\\title{formula}\n"
+                 "\\author{Julia}\n"
+                 "\n"
+                 "\\begin{document}\n"
+                 "\\maketitle\n"
+                 "\n");
     fprintf(outfile, "$$");
     dumpLaTeX(outfile, tree->root);
     fprintf(outfile, "$$\n");
+    fprintf(outfile, "\\end{document}\n");
 
     return DIFF_SUCCESS;
 }
@@ -249,7 +269,7 @@ void dumpLaTeX(FILE* file, const node_t* node)
     CHECK(file != NULL, ;);
     CHECK(node != NULL, ;);
 
-    switch (node->type)
+    switch(node->type)
     {
     case NUM:
         fprintf(file, "%lg", node->data.dblValue);
@@ -298,6 +318,12 @@ void dumpLaTeX(FILE* file, const node_t* node)
             dumpLaTeX(file, node->right);
             fprintf(file, "} ");
             break;
+
+        case OP_POW:
+            dumpLaTeX(file, node->left);
+            fprintf(file, " ^ ");
+            dumpLaTeX(file, node->right);
+            break;            
 
         default:
             fprintf(file, "\\text{error}");

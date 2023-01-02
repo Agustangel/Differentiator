@@ -100,6 +100,7 @@ typedef struct tree_t
 
 int treeCtor(tree_t* tree);
 node_t* createNode(int val, node_t* left, node_t* right);
+node_t* copyNode(node_t* prev_node);
 node_t* createNum(int val);
 node_t* createVar(const char* val);
 int treeDtor(tree_t* tree);
