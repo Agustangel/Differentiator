@@ -75,18 +75,22 @@ void convolveConst(node_t* node)
         case OP_ADD:
             val = getVal(node->left) + getVal(node->right);
             node->data.dblValue = val;
+            break;
 
         case OP_SUB:
             val = getVal(node->left) - getVal(node->right);
             node->data.dblValue = val;
+            break;
 
         case OP_MUL:
             val = getVal(node->left) * getVal(node->right);
             node->data.dblValue = val;
+            break;
 
         case OP_DIV:
             val = getVal(node->left) / getVal(node->right);
             node->data.dblValue = val;
+            break;
         }
 
         treeNodeDtor(node->left);

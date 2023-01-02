@@ -24,8 +24,11 @@ int main()
 
     node_t* root = makeAST(str);
     node_t* diff_root = differentiate(root);
-
     tree.root = diff_root;
+
+    convolveConst(tree.root);
+    //convolveNeutral(tree.root);
+
     dumpGraphTree(&tree);
 
     return 0;
