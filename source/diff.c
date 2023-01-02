@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <math.h>
 #include "diff.h"
 #include "diff_tree.h"
 #include "debug.h"
@@ -36,7 +37,7 @@ node_t* differentiate(node_t* node)
             return Div(Sub(Mul(dL, copyNode(cR)), Mul(copyNode(cL), dR)), Pow(copyNode(cR), createNum(2)));
 
         case OP_POW:
-            return Mul(Mul(Pow(cL, Sub(copyNode(cR), createNum(1))), copyNode(cR)), dL);
+            return Mul(Mul(Pow(copyNode(cL), Sub(copyNode(cR), createNum(1))), copyNode(cR)), dL);
 
         case OP_SIN:
             return Mul(Cos(copyNode(cR)), dR);
@@ -91,6 +92,11 @@ void convolveConst(node_t* node)
             val = getVal(node->left) / getVal(node->right);
             node->data.dblValue = val;
             break;
+
+        case OP_POW:
+            val = pow(getVal(node->left), getVal(node->right));
+            node->data.dblValue = val;
+            break;            
         }
         node->data.opValue = 0;
 
@@ -136,6 +142,8 @@ void convolveNeutral(node_t* node)
         treeNodeDtor(node->right);
         node->left = NULL;
         node->right = NULL;
+
+        return;
     }
     if(isOP(OP_POW) && (isZERO(node->left) || isZERO(node->right)))
     {
@@ -146,6 +154,8 @@ void convolveNeutral(node_t* node)
         treeNodeDtor(node->right);
         node->left = NULL;
         node->right = NULL;
+
+        return;
     }
 
     if((isOP(OP_MUL) || isOP(OP_DIV) || isOP(OP_POW)) && isONE(node->left))
@@ -160,6 +170,8 @@ void convolveNeutral(node_t* node)
         node->data = node->right->data;
         treeNodeDtor(node->left);
         node->left = NULL;
+
+        return;
     }
     if((isOP(OP_MUL) || isOP(OP_DIV) || isOP(OP_POW)) && isONE(node->right))
     {
@@ -173,6 +185,8 @@ void convolveNeutral(node_t* node)
         node->data = node->left->data;
         treeNodeDtor(node->right);
         node->right = NULL;
+
+        return;
     }
 }
 
@@ -560,6 +574,7 @@ node_t* getL()
 
 int isNum(node_t* node)
 {
+    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
     return(node->type == NUM);
 }
 
@@ -567,6 +582,7 @@ int isNum(node_t* node)
 
 int isVar(node_t* node)
 {
+    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
     return(node->type == VAR);
 }
 
@@ -574,6 +590,7 @@ int isVar(node_t* node)
 
 int isOp(node_t* node)
 {
+    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
     return(node->type == OP);
 }
 
@@ -581,6 +598,7 @@ int isOp(node_t* node)
 
 double getVal(node_t* node)
 {
+    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
     return(node->data.dblValue);
 }
 
@@ -588,6 +606,8 @@ double getVal(node_t* node)
 
 int isZERO(node_t* node)
 {
+    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
+
     if((node->type == NUM) && (node->data.dblValue == 0))
     {
         return true;
@@ -599,6 +619,8 @@ int isZERO(node_t* node)
 
 int isONE(node_t* node)
 {
+    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
+
     if((node->type == NUM) && (node->data.dblValue == 1))
     {
         return true;

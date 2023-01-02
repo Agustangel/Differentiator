@@ -3,7 +3,7 @@ INCLUDES=include
 SOURCE=source
 
 diff: main.o diff.o diff_tree.o
-	gcc -o diff $^ -llogger -lonegin
+	gcc -o diff $^ -llogger -lonegin -lm
 
 main.o: main.c
 	gcc -g -O0 -I${INCLUDES}/ -c $^

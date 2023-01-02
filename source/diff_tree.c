@@ -50,6 +50,7 @@ node_t* copyNode(node_t* prev_node)
     case VAR:
         node->type = VAR;
         node->data.varValue = prev_node->data.varValue;
+        break;
 
     case OP:
         node->type = OP;
