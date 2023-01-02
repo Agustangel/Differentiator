@@ -150,15 +150,29 @@ void convolveNeutral(node_t* node)
 
     if((isOP(OP_MUL) || isOP(OP_DIV) || isOP(OP_POW)) && isONE(node->left))
     {
+        if(node->type == node->right->type)
+        {
+            node->left = node->right->left;
+            node->right = node->right->right;
+            return;
+        }
+        node->type = node->right->type;
+        node->data = node->right->data;
         treeNodeDtor(node->left);
         node->left = NULL;
-        node = node->right;
     }
     if((isOP(OP_MUL) || isOP(OP_DIV) || isOP(OP_POW)) && isONE(node->right))
     {
+        if(node->type == node->left->type)
+        {
+            node->right = node->left->right;
+            node->left  = node->left->left;
+            return;
+        }
+        node->type = node->left->type;
+        node->data = node->left->data;
         treeNodeDtor(node->right);
         node->right = NULL;
-        node = node->left;
     }
 }
 
