@@ -38,7 +38,8 @@ enum node_op
     OP_COS     = 7,
     OP_EXP     = 8,
     OP_LN      = 9,
-    OP_BRACKET = 10
+    OP_OPENBRT = 10,
+    OP_CLOSBRT = 11
 };
 
 enum node_codes
@@ -103,6 +104,7 @@ node_t* createNode(int val, node_t* left, node_t* right);
 node_t* copyNode(node_t* prev_node);
 node_t* createNum(int val);
 node_t* createVar(const char* val);
+node_t* createOp(int opValue);
 int treeDtor(tree_t* tree);
 void treeNodeDtor(node_t* node);
 int dumpGraphTree(tree_t* tree);

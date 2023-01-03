@@ -8,11 +8,11 @@ const static double _NUM_E_ = 2.7182818284;
 const static double EPSILON = 1e-6;
 
 
-#define dL differentiate(node->left)
-#define dR differentiate(node->right)
+#define dL differentiate(copyNode(node->left))
+#define dR differentiate(copyNode(node->right))
 
-#define cL node->left
-#define cR node->right
+#define cL copyNode(node->left)
+#define cR copyNode(node->right)
 
 #define isOP(option)               \
     (node->data.opValue == option) \
@@ -75,3 +75,4 @@ int isONE(node_t* node);
 int isSin(node_t* node);
 int isCos(node_t* node);
 int isExp(node_t* node);
+int isOpenBrt(node_t* node);

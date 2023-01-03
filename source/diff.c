@@ -8,7 +8,6 @@
 #include "diff_tree.h"
 #include "debug.h"
 
-//#TODO добавить скобки
 
 char* s = NULL;
 
@@ -38,25 +37,28 @@ node_t* differentiate(node_t* node)
             return Sub(dL, dR);
 
         case OP_MUL:
-            return Add(Mul(dL, copyNode(cR)), Mul(copyNode(cL), dR));
+            return Add(Mul(dL, cR), Mul(cL, dR));
 
         case OP_DIV:
-            return Div(Sub(Mul(dL, copyNode(cR)), Mul(copyNode(cL), dR)), Pow(copyNode(cR), createNum(2)));
+            return Div(Sub(Mul(dL, cR), Mul(cL, dR)), Pow(cR, createNum(2)));
 
         case OP_POW:
-            return Mul(Mul(Pow(copyNode(cL), Sub(copyNode(cR), createNum(1))), copyNode(cR)), dL);
+            return Mul(Mul(Pow(cL, Sub(cR, createNum(1))), cR), dL);
 
         case OP_SIN:
-            return Mul(Cos(copyNode(cR)), dR);
+            return Mul(Cos(cR), dR);
 
         case OP_COS:
-            return Mul(Mul(Sin(copyNode(cR)), createNum(-1)), dR);
+            return Mul(Mul(Sin(cR), createNum(-1)), dR);
         
         case OP_EXP:
-            return Mul(Exp(copyNode(cR)), dR);
+            return Mul(Exp(cR), dR);
 
         case OP_LN:
-            return Mul(Div(createNum(1), copyNode(cR)), dR);
+            return Mul(Div(createNum(1), cR), dR);
+
+        case OP_OPENBRT:
+            return dL;
 
         default:
             break;
@@ -103,7 +105,7 @@ void convolveConst(node_t* node)
 {
     CHECK(node != NULL, ;);
     
-    if((node->type == OP) && (isNum(node->left)) && (isNum(node->right)))
+    if((node->type == OP) && ((node->left) != NULL) && isNum(node->left) && ((node->left) != NULL) && isNum(node->right))
     {
         ++Count_Conv;
         node->type = NUM;
@@ -201,7 +203,7 @@ void convolveNeutral(node_t* node)
     if((isOP(OP_MUL) || isOP(OP_DIV) || isOP(OP_POW)) && isONE(node->left))
     {
         ++Count_Conv;
-        if(node->type == node->right->type)
+        if(node->data.opValue == node->right->data.opValue)
         {
             node->left = node->right->left;
             node->right = node->right->right;
@@ -217,7 +219,7 @@ void convolveNeutral(node_t* node)
     if((isOP(OP_MUL) || isOP(OP_DIV) || isOP(OP_POW)) && isONE(node->right))
     {
         ++Count_Conv;
-        if(node->type == node->left->type)
+        if(node->data.opValue == node->left->data.opValue)
         {
             node->right = node->left->right;
             node->left  = node->left->left;
@@ -260,6 +262,11 @@ void convolveNeutral(node_t* node)
         node->right = NULL;
 
         return;           
+    }
+    if(isOpenBrt(node) && isOpenBrt(node->left) && (node->right == NULL))
+    {
+        node->right = node->left->right;
+        node->left = node->left->left;
     }
 }
 
@@ -345,6 +352,15 @@ node_t* Ln(node_t* node)
     CHECK(node != NULL, NULL);
 
     return createNode(OP_LN, NULL, node);
+}
+
+//-------------------------------------------------------------------
+
+node_t* Bracket(node_t* node)
+{
+    CHECK(node != NULL, NULL);
+
+    return createNode(OP_OPENBRT, node, createOp(OP_CLOSBRT));
 }
 
 //=========================================================================
@@ -459,8 +475,15 @@ void dumpLaTeX(FILE* file, const node_t* node)
             fprintf(file, ")");
             break; 
 
+        case OP_OPENBRT:
+            fprintf(file, "(");
+            dumpLaTeX(file, node->left);
+            fprintf(file, ")");
+            break;
+
         default:
             fprintf(file, "\\text{error}");
+            break;
         }
         return;
     
@@ -661,6 +684,8 @@ node_t* getP()
         val = getE();
         CHECK(*s == ')', NULL);
         ++s;
+
+        return Bracket(val);
     }
     else
     {
@@ -803,3 +828,18 @@ int isExp(node_t* node)
     }
     return false;
 }
+
+//-------------------------------------------------------------------
+
+int isOpenBrt(node_t* node)
+{
+    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
+
+    if((node->type == OP) && (node->data.opValue == OP_OPENBRT))
+    {
+        return true;
+    }
+    return false;
+}
+
+//-------------------------------------------------------------------

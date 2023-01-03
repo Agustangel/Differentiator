@@ -37,6 +37,16 @@ node_t* createNode(int val, node_t* left, node_t* right)
 
 node_t* copyNode(node_t* prev_node)
 {
+    //
+    if(prev_node->left != NULL)
+    {
+        copyNode(prev_node->left);
+    }
+    if(prev_node->right != NULL)
+    {
+        copyNode(prev_node->right);
+    }
+
     node_t* node = (node_t*) calloc(1, sizeof(node_t));
     CHECK(node !=  NULL, NULL);
 
@@ -92,6 +102,22 @@ node_t* createVar(const char* val)
 
     node->type  = VAR;
     node->data.varValue = val;
+
+    node->left  = NULL;
+    node->right = NULL;
+ 
+    return node;
+}
+
+//=========================================================================
+
+node_t* createOp(int opValue)
+{
+    node_t* node = (node_t*) calloc(1, sizeof(node_t));
+    CHECK(node !=  NULL, NULL);
+
+    node->type  = OP;
+    node->data.opValue = opValue;
 
     node->left  = NULL;
     node->right = NULL;
@@ -221,6 +247,16 @@ int dumpGraphNode(node_t* node, FILE* dot_out)
                                style=\"filled\", fillcolor = \"#D0FDFF\"];\n", node);
             break;            
 
+        case OP_OPENBRT:
+            fprintf(dot_out, "\n\t\t\"(_%p\"[shape = \"ellipse\", label = \"(\", color=\"#900000\", \
+                               style=\"filled\", fillcolor = \"#D0FDFF\"];\n", node);
+            break;  
+
+        case OP_CLOSBRT:
+            fprintf(dot_out, "\n\t\t\")_%p\"[shape = \"ellipse\", label = \")\", color=\"#900000\", \
+                               style=\"filled\", fillcolor = \"#D0FDFF\"];\n", node);
+            break; 
+
         default:
             break;
         }
@@ -292,6 +328,14 @@ int fprintfConnection(node_t* node_prev, node_t* node, int operation, FILE* dot_
             fprintf(dot_out, "\t\t\"ln_%p\"->\"%lg_%p\";\n", node_prev, node->data.dblValue, node);
             break;
 
+        case OP_OPENBRT:
+            fprintf(dot_out, "\t\t\"(_%p\"->\"%lg_%p\";\n", node_prev, node->data.dblValue, node);
+            break;  
+
+        case OP_CLOSBRT:
+            fprintf(dot_out, "\t\t\")_%p\"->\"%lg_%p\";\n", node_prev, node->data.dblValue, node);
+            break;
+
         default:
             break;
         }
@@ -334,6 +378,14 @@ int fprintfConnection(node_t* node_prev, node_t* node, int operation, FILE* dot_
 
         case OP_LN:
             fprintf(dot_out, "\t\t\"ln_%p\"->\"%c_%p\";\n", node_prev, *node->data.varValue, node);
+            break;
+
+        case OP_OPENBRT:
+            fprintf(dot_out, "\t\t\"(_%p\"->\"%c_%p\";\n", node_prev, *node->data.varValue, node);
+            break;  
+
+        case OP_CLOSBRT:
+            fprintf(dot_out, "\t\t\")_%p\"->\"%c_%p\";\n", node_prev, *node->data.varValue, node);
             break;
 
         default:
@@ -380,6 +432,14 @@ int fprintfConnection(node_t* node_prev, node_t* node, int operation, FILE* dot_
             fprintf(dot_out, "\t\t\"ln_%p\"->", node_prev);
             break;
 
+        case OP_OPENBRT:
+            fprintf(dot_out, "\t\t\"(_%p\"->", node_prev);
+            break;  
+
+        case OP_CLOSBRT:
+            fprintf(dot_out, "\t\t\")_%p\"->", node_prev);
+            break;
+
         default:
             break;
         }
@@ -420,6 +480,14 @@ int fprintfConnection(node_t* node_prev, node_t* node, int operation, FILE* dot_
 
         case OP_LN:
             fprintf(dot_out, "\"ln_%p\";\n", node);
+            break;
+
+        case OP_OPENBRT:
+            fprintf(dot_out, "\"(_%p\";\n", node);
+            break;  
+
+        case OP_CLOSBRT:
+            fprintf(dot_out, "\")_%p\";\n", node);
             break;
 
         default:

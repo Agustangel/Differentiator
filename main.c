@@ -26,10 +26,10 @@ int main()
     node_t* diff_root = differentiate(root);
     tree.root = diff_root;
 
-    convolveExpression(tree.root);
+    //convolveExpression(tree.root);
 
     dumpGraphTree(&tree);
-    //dump(&tree);
+    dump(&tree);
 
     return 0;
 }
