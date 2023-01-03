@@ -8,8 +8,13 @@
 #include "diff_tree.h"
 #include "debug.h"
 
+//#TODO добавить скобки
 
 char* s = NULL;
+
+int Conv_Const  = DO;
+int Conv_Neutrl = DO;
+int Count_Conv  = 0;
 //=========================================================================
 node_t* differentiate(node_t* node)
 {
@@ -64,15 +69,46 @@ node_t* differentiate(node_t* node)
 
 //=========================================================================
 
+int convolveExpression(node_t* node)
+{
+    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
+
+    while(Conv_Const != STOP)
+    {
+        convolveConst(node);
+
+        if(Count_Conv == 0)
+        {
+            Conv_Const = STOP;
+        }
+        Count_Conv = 0;
+    }
+    while(Conv_Neutrl != STOP)
+    {
+        convolveNeutral(node);
+
+        if(Count_Conv == 0)
+        {
+            Conv_Neutrl = STOP;
+        }
+        Count_Conv = 0;
+    }
+
+    return DIFF_SUCCESS;
+}
+
+//=========================================================================
+
 void convolveConst(node_t* node)
 {
     CHECK(node != NULL, ;);
     
     if((node->type == OP) && (isNum(node->left)) && (isNum(node->right)))
     {
+        ++Count_Conv;
         node->type = NUM;
-
         double val = 0;
+
         switch(node->data.opValue)
         {
         case OP_ADD:
@@ -137,6 +173,7 @@ void convolveNeutral(node_t* node)
 
     if(isOP(OP_MUL) && (isZERO(node->left) || isZERO(node->right)))
     {
+        ++Count_Conv;
         node->type = NUM;
         node->data.dblValue = 0;
 
@@ -149,6 +186,7 @@ void convolveNeutral(node_t* node)
     }
     if(isOP(OP_POW) && (isZERO(node->left) || isZERO(node->right)))
     {
+        ++Count_Conv;
         node->type = NUM;
         node->data.dblValue = 1;
 
@@ -162,6 +200,7 @@ void convolveNeutral(node_t* node)
 
     if((isOP(OP_MUL) || isOP(OP_DIV) || isOP(OP_POW)) && isONE(node->left))
     {
+        ++Count_Conv;
         if(node->type == node->right->type)
         {
             node->left = node->right->left;
@@ -177,6 +216,7 @@ void convolveNeutral(node_t* node)
     }
     if((isOP(OP_MUL) || isOP(OP_DIV) || isOP(OP_POW)) && isONE(node->right))
     {
+        ++Count_Conv;
         if(node->type == node->left->type)
         {
             node->right = node->left->right;
@@ -189,6 +229,37 @@ void convolveNeutral(node_t* node)
         node->right = NULL;
 
         return;
+    }
+
+    if(isSin(node) && isZERO(node->right))
+    {
+        ++Count_Conv;
+        node->type = NUM;
+        node->data.dblValue = 0;
+        treeNodeDtor(node->right);
+        node->right = NULL;
+
+        return;           
+    }
+    if(isCos(node) && isZERO(node->right))
+    {
+        ++Count_Conv;
+        node->type = NUM;
+        node->data.dblValue = 1;
+        treeNodeDtor(node->right);
+        node->right = NULL;
+
+        return;           
+    }
+    if(isExp(node) && isZERO(node->right))
+    {
+        ++Count_Conv;
+        node->type = NUM;
+        node->data.dblValue = 1;
+        treeNodeDtor(node->right);
+        node->right = NULL;
+
+        return;           
     }
 }
 
@@ -494,6 +565,13 @@ node_t* getG()
 
 node_t* getN()
 {
+    int tmp = 1;
+
+    if(*s == '-')
+    {
+        ++s;
+        tmp = -1;
+    }
     if(isdigit(*s))
     {
         int val = 0;
@@ -504,6 +582,7 @@ node_t* getN()
             val = (val * 10) + (*s - '0');
             ++s;
         }
+        val *= tmp;
         CHECK(s > sOld, NULL);
 
         return createNum(val);
@@ -513,6 +592,10 @@ node_t* getN()
         const char* elem = s;
         ++s;
 
+        if(tmp == -1)
+        {
+            return Mul(createVar(elem), createNum(-1));
+        }
         return createVar(elem);
     }
 }
@@ -689,6 +772,32 @@ int isSin(node_t* node)
     CHECK(node != NULL, ERR_DIFF_NULL_PTR);
 
     if((node->type == OP) && (node->data.opValue == OP_SIN))
+    {
+        return true;
+    }
+    return false;
+}
+
+//-------------------------------------------------------------------
+
+int isCos(node_t* node)
+{
+    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
+
+    if((node->type == OP) && (node->data.opValue == OP_COS))
+    {
+        return true;
+    }
+    return false;
+}
+
+//-------------------------------------------------------------------
+
+int isExp(node_t* node)
+{
+    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
+
+    if((node->type == OP) && (node->data.opValue == OP_EXP))
     {
         return true;
     }

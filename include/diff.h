@@ -35,6 +35,12 @@ enum
     SHORT = 6
 };
 
+enum
+{
+    STOP = -2,
+    DO   =  2
+};
+
 //=========================================================================
 
 node_t* differentiate(node_t* node);
@@ -49,6 +55,7 @@ node_t* Exp(node_t* node);
 node_t* Ln(node_t* node);
 void convolveConst(node_t* node);
 void convolveNeutral(node_t* node);
+int convolveExpression(node_t* node);
 int dump(tree_t* tree);
 void dumpLaTeX(FILE* file, const node_t* node);
 int printExpression(node_t* node, int type);
@@ -65,3 +72,6 @@ int isOp(node_t* node);
 double getVal(node_t* node);
 int isZERO(node_t* node);
 int isONE(node_t* node);
+int isSin(node_t* node);
+int isCos(node_t* node);
+int isExp(node_t* node);
