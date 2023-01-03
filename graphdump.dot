@@ -1,4 +1,27 @@
 digraph {
 	node[shape = "cube", color = "#800000", fontsize = 15, style = "filled", fillcolor = "#88CEFA"];
 	edge[color = "#190970", fontsize = 11];
+
+		"*_0x55e707fe4840"[shape = "ellipse", label = "*", color="#900000",                                style="filled", fillcolor = "#D0FDFF"];
+		"*_0x55e707fe4840"->"exp_0x55e707fe4800";
+
+		"exp_0x55e707fe4800"[shape = "ellipse", label = "exp", color="#900000",                                style="filled", fillcolor = "#D0FDFF"];
+		"exp_0x55e707fe4800"->"^_0x55e707fe47c0";
+
+		"^_0x55e707fe47c0"[shape = "ellipse", label = "^", color="#900000",                                style="filled", fillcolor = "#D0FDFF"];
+		"^_0x55e707fe47c0"->"x_0x55e707fe4480";
+
+		"x_0x55e707fe4480"[shape = "ellipse", label = "x", color="#900000", style="filled",                            fillcolor = "#D0FDFF"];
+		"^_0x55e707fe47c0"->"2_0x55e707fe44c0";
+
+		"2_0x55e707fe44c0"[shape = "ellipse", label = "2", color="#900000", style="filled",                            fillcolor = "#D0FDFF"];
+		"*_0x55e707fe4840"->"*_0x55e707fe4780";
+
+		"*_0x55e707fe4780"[shape = "ellipse", label = "*", color="#900000",                                style="filled", fillcolor = "#D0FDFF"];
+		"*_0x55e707fe4780"->"x_0x55e707fe4700";
+
+		"x_0x55e707fe4700"[shape = "ellipse", label = "x", color="#900000", style="filled",                            fillcolor = "#D0FDFF"];
+		"*_0x55e707fe4780"->"2_0x55e707fe45c0";
+
+		"2_0x55e707fe45c0"[shape = "ellipse", label = "2", color="#900000", style="filled",                            fillcolor = "#D0FDFF"];
 }

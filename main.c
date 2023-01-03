@@ -30,7 +30,7 @@ int main()
     convolveNeutral(tree.root);
 
     dumpGraphTree(&tree);
-    //dump(&tree);
+    dump(&tree);
 
     return 0;
 }

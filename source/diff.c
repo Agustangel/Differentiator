@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <ctype.h>
 #include <math.h>
+
 #include "diff.h"
 #include "diff_tree.h"
 #include "debug.h"
@@ -280,7 +282,7 @@ int dump(tree_t* tree)
 {
     CHECK(tree != NULL, ERR_TREE_NULL_PTR);
 
-    FILE* outfile = fopen("texdump.tex", "a");
+    FILE* outfile = fopen("texdump.tex", "w");
     CHECK(outfile != NULL, ERR_DIFF_NULL_PTR);
 
     fprintf(outfile, "\\documentclass{article}\n"
@@ -317,13 +319,12 @@ void dumpLaTeX(FILE* file, const node_t* node)
         return;
 
     case OP:
-        if ((node->left == NULL) || (node->right == NULL))
+        if ((node->left == NULL) && (node->right == NULL))
         {
             fprintf(file, "\\text{error}");
             return;    
         }
 
-        fprintf(file, "(");
         switch(node->data.opValue)
         {
         case OP_ERROR:
@@ -358,14 +359,38 @@ void dumpLaTeX(FILE* file, const node_t* node)
 
         case OP_POW:
             dumpLaTeX(file, node->left);
-            fprintf(file, " ^ ");
+            fprintf(file, " ^ {");
             dumpLaTeX(file, node->right);
+            fprintf(file, "}");
             break;            
+
+        case OP_COS:
+            fprintf(file, "cos(");
+            dumpLaTeX(file, node->right);
+            fprintf(file, ")");
+            break; 
+
+        case OP_SIN:
+            fprintf(file, "sin(");
+            dumpLaTeX(file, node->right);
+            fprintf(file, ")");
+            break; 
+
+        case OP_EXP:
+            fprintf(file, "e^{");
+            dumpLaTeX(file, node->right);
+            fprintf(file, "}");
+            break; 
+
+        case OP_LN:
+            fprintf(file, "ln(");
+            dumpLaTeX(file, node->right);
+            fprintf(file, ")");
+            break; 
 
         default:
             fprintf(file, "\\text{error}");
         }
-        fprintf(file, ")");
         return;
     
     default:
