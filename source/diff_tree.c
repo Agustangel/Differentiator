@@ -37,16 +37,6 @@ node_t* createNode(int val, node_t* left, node_t* right)
 
 node_t* copyNode(node_t* prev_node)
 {
-    //
-    if(prev_node->left != NULL)
-    {
-        copyNode(prev_node->left);
-    }
-    if(prev_node->right != NULL)
-    {
-        copyNode(prev_node->right);
-    }
-
     node_t* node = (node_t*) calloc(1, sizeof(node_t));
     CHECK(node !=  NULL, NULL);
 
@@ -71,8 +61,24 @@ node_t* copyNode(node_t* prev_node)
         break;
     }
 
-    node->left  = prev_node->left;
-    node->right = prev_node->right;
+    if(prev_node->left != NULL)
+    {
+        node_t* left = copyNode(prev_node->left);
+        node->left = left;
+    }
+    else
+    {
+        node->left  = NULL;
+    }
+    
+    if(prev_node->right != NULL)
+    {
+        node_t* right = copyNode(prev_node->right);
+        node->right = right;
+        
+        return node;
+    }
+    node->right = NULL;
 
     return node;     
 }

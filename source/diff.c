@@ -209,10 +209,10 @@ void convolveNeutral(node_t* node)
             node->right = node->right->right;
             return;
         }
-        node->type = node->right->type;
-        node->data = node->right->data;
         treeNodeDtor(node->left);
         node->left = NULL;
+        node->type = node->right->type;
+        node->data = node->right->data;
 
         return;
     }
@@ -225,10 +225,20 @@ void convolveNeutral(node_t* node)
             node->left  = node->left->left;
             return;
         }
-        node->type = node->left->type;
-        node->data = node->left->data;
+        if(islOP(OP_COS) || islOP(OP_SIN) || islOP(OP_EXP) || islOP(OP_LN))
+        {
+            node->right = copyNode(node->left);
+            treeNodeDtor(node->left);
+            node->left = NULL;
+            node->type = node->right->type;
+            node->data = node->right->data;
+            
+            return;            
+        }
         treeNodeDtor(node->right);
         node->right = NULL;
+        node->type = node->left->type;
+        node->data = node->left->data;
 
         return;
     }
@@ -265,8 +275,19 @@ void convolveNeutral(node_t* node)
     }
     if(isOpenBrt(node) && isOpenBrt(node->left) && (node->right == NULL))
     {
+        ++Count_Conv;
         node->right = node->left->right;
         node->left = node->left->left;
+    }
+    if((isCos(node) && isCos(node->right)) || (isSin(node) && isSin(node->right)))
+    {
+        ++Count_Conv;
+        node->right = node->right->right;
+    }
+    if((isExp(node) && isExp(node->right)) || (isLn(node) && isLn(node->right)))
+    {
+        ++Count_Conv;
+        node->right = node->right->right;
     }
 }
 
@@ -406,7 +427,7 @@ void dumpLaTeX(FILE* file, const node_t* node)
         return;
 
     case OP:
-        if ((node->left == NULL) && (node->right == NULL))
+        if ((node->left == NULL) && (node->right == NULL) && (node->data.opValue != OP_CLOSBRT))
         {
             fprintf(file, "\\text{error}");
             return;    
@@ -452,15 +473,13 @@ void dumpLaTeX(FILE* file, const node_t* node)
             break;            
 
         case OP_COS:
-            fprintf(file, "cos(");
+            fprintf(file, "cos");
             dumpLaTeX(file, node->right);
-            fprintf(file, ")");
             break; 
 
         case OP_SIN:
-            fprintf(file, "sin(");
+            fprintf(file, "sin");
             dumpLaTeX(file, node->right);
-            fprintf(file, ")");
             break; 
 
         case OP_EXP:
@@ -470,14 +489,17 @@ void dumpLaTeX(FILE* file, const node_t* node)
             break; 
 
         case OP_LN:
-            fprintf(file, "ln(");
+            fprintf(file, "ln");
             dumpLaTeX(file, node->right);
-            fprintf(file, ")");
             break; 
 
         case OP_OPENBRT:
             fprintf(file, "(");
             dumpLaTeX(file, node->left);
+            dumpLaTeX(file, node->right);
+            break;
+
+        case OP_CLOSBRT:
             fprintf(file, ")");
             break;
 
@@ -522,30 +544,47 @@ int printExpression(node_t* node, int type)
         {
         case OP_ADD:
             printf("+");
+            break;
 
         case OP_SUB:
             printf("-");
+            break;
 
         case OP_MUL:
             printf("*");
+            break;
 
         case OP_DIV:
             printf("/");
+            break;
 
         case OP_POW:
             printf("^");
+            break;
 
         case OP_SIN:
             printf("sin");
+            break;
 
         case OP_COS:
             printf("cos");
+            break;
         
         case OP_EXP:
             printf("exp");
+            break;
 
         case OP_LN:
             printf("ln");
+            break;
+
+        case OP_OPENBRT:
+            printf("(");
+            break;
+        
+        case OP_CLOSBRT:
+            printf(")");
+            break;
         }        
     }
     if(type == ALL)
@@ -831,6 +870,19 @@ int isExp(node_t* node)
 
 //-------------------------------------------------------------------
 
+int isLn(node_t* node)
+{
+    CHECK(node != NULL, ERR_DIFF_NULL_PTR);
+
+    if((node->type == OP) && (node->data.opValue == OP_LN))
+    {
+        return true;
+    }
+    return false;
+}
+
+//-------------------------------------------------------------------
+
 int isOpenBrt(node_t* node)
 {
     CHECK(node != NULL, ERR_DIFF_NULL_PTR);
@@ -841,5 +893,3 @@ int isOpenBrt(node_t* node)
     }
     return false;
 }
-
-//-------------------------------------------------------------------
