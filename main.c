@@ -24,9 +24,9 @@ int main()
 
     node_t* root = makeAST(str);
     node_t* diff_root = differentiate(root);
-    tree.root = diff_root;
+    tree.root = root;
 
-    convolveExpression(tree.root);
+    //convolveExpression(tree.root);
 
     dumpGraphTree(&tree);
     dump(&tree);
