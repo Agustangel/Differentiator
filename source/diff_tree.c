@@ -148,7 +148,7 @@ int treeDtor(tree_t* tree)
 
 void treeNodeDtor(node_t* node)
 {
-    if (node == NULL)
+    if(node == NULL)
     {
         return;
     }

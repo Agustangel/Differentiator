@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdbool.h>
 #include <ctype.h>
 #include <math.h>
@@ -142,9 +143,9 @@ void convolveConst(node_t* node)
 
         treeNodeDtor(node->left);
         treeNodeDtor(node->right);
-        node->left = NULL;
+        node->left  = NULL;
         node->right = NULL;
-
+        
         return;
     }
 
@@ -181,7 +182,7 @@ void convolveNeutral(node_t* node)
 
         treeNodeDtor(node->left);
         treeNodeDtor(node->right);
-        node->left = NULL;
+        node->left  = NULL;
         node->right = NULL;
 
         return;
@@ -194,7 +195,7 @@ void convolveNeutral(node_t* node)
 
         treeNodeDtor(node->left);
         treeNodeDtor(node->right);
-        node->left = NULL;
+        node->left  = NULL;
         node->right = NULL;
 
         return;
@@ -738,22 +739,22 @@ node_t* getP()
 
 node_t* getL()
 {
-    if((*s == 'c') && (*(s + 1) == 'o') && (*(s + 2) == 's'))
+    if(strncmp(s, "cos", 3) == 0)
     {
         s += 3;
         return Cos(getP());
     }
-    if((*s == 's') && (*(s + 1) == 'i') && (*(s + 2) == 'n'))
+    if(strncmp(s, "sin", 3) == 0)
     {
         s += 3;
         return Sin(getP());
     }
-    if((*s == 'e') && (*(s + 1) == 'x') && (*(s + 2) == 'p'))
+    if(strncmp(s, "exp", 3) == 0)
     {
         s += 3;
         return Exp(getP());        
     }
-    if((*s == 'l') && (*(s + 1) == 'n'))
+    if(strncmp(s, "ln", 2) == 0)
     {
         s += 2;
         return Ln(getP());        
