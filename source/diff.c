@@ -12,9 +12,9 @@
 
 char* s = NULL;
 
-int Conv_Const  = DO;
-int Conv_Neutrl = DO;
-int Count_Conv  = 0;
+static int Conv_Const  = DO;
+static int Conv_Neutrl = DO;
+static int Count_Conv  = 0;
 //=========================================================================
 node_t* differentiate(node_t* node)
 {
@@ -336,7 +336,6 @@ node_t* Div(node_t* left, node_t* right)
 node_t* Pow(node_t* node, node_t* power)
 {
     CHECK(node != NULL, NULL);
-
     return createNode(OP_POW, node, power);
 }
 
@@ -345,7 +344,6 @@ node_t* Pow(node_t* node, node_t* power)
 node_t* Sin(node_t* node)
 {
     CHECK(node != NULL, NULL);
-
     return createNode(OP_SIN, NULL, node);
 }
 
@@ -354,7 +352,6 @@ node_t* Sin(node_t* node)
 node_t* Cos(node_t* node)
 {
     CHECK(node != NULL, NULL);
-
     return createNode(OP_COS, NULL, node);
 }
 
@@ -363,7 +360,6 @@ node_t* Cos(node_t* node)
 node_t* Exp(node_t* node)
 {
     CHECK(node != NULL, NULL);
-
     return createNode(OP_EXP, NULL, node);
 }
 
@@ -372,7 +368,6 @@ node_t* Exp(node_t* node)
 node_t* Ln(node_t* node)
 {
     CHECK(node != NULL, NULL);
-
     return createNode(OP_LN, NULL, node);
 }
 
@@ -381,7 +376,6 @@ node_t* Ln(node_t* node)
 node_t* Bracket(node_t* node)
 {
     CHECK(node != NULL, NULL);
-
     return createNode(OP_OPENBRT, node, createOp(OP_CLOSBRT));
 }
 
@@ -640,7 +634,7 @@ node_t* getN()
         int val = 0;
         char* sOld = s;
 
-        while((*s >= '0') && (*s <= '9'))
+        while(isdigit(*s))
         {
             val = (val * 10) + (*s - '0');
             ++s;
@@ -727,10 +721,7 @@ node_t* getP()
 
         return Bracket(val);
     }
-    else
-    {
-        val = getN();
-    }
+    val = getN();
 
     return val;
 }
@@ -809,12 +800,7 @@ double getVal(node_t* node)
 int isZERO(node_t* node)
 {
     CHECK(node != NULL, ERR_DIFF_NULL_PTR);
-
-    if((node->type == NUM) && (node->data.dblValue == 0))
-    {
-        return true;
-    }
-    return false;
+    return((node->type == NUM) && (node->data.dblValue == 0));
 }
 
 //-------------------------------------------------------------------
@@ -822,12 +808,7 @@ int isZERO(node_t* node)
 int isONE(node_t* node)
 {
     CHECK(node != NULL, ERR_DIFF_NULL_PTR);
-
-    if((node->type == NUM) && (node->data.dblValue == 1))
-    {
-        return true;
-    }
-    return false;
+    return((node->type == NUM) && (node->data.dblValue == 1));
 }
 
 //-------------------------------------------------------------------
@@ -835,12 +816,7 @@ int isONE(node_t* node)
 int isSin(node_t* node)
 {
     CHECK(node != NULL, ERR_DIFF_NULL_PTR);
-
-    if((node->type == OP) && (node->data.opValue == OP_SIN))
-    {
-        return true;
-    }
-    return false;
+    return((node->type == OP) && (node->data.opValue == OP_SIN));
 }
 
 //-------------------------------------------------------------------
@@ -848,12 +824,7 @@ int isSin(node_t* node)
 int isCos(node_t* node)
 {
     CHECK(node != NULL, ERR_DIFF_NULL_PTR);
-
-    if((node->type == OP) && (node->data.opValue == OP_COS))
-    {
-        return true;
-    }
-    return false;
+    return((node->type == OP) && (node->data.opValue == OP_COS));
 }
 
 //-------------------------------------------------------------------
@@ -861,12 +832,7 @@ int isCos(node_t* node)
 int isExp(node_t* node)
 {
     CHECK(node != NULL, ERR_DIFF_NULL_PTR);
-
-    if((node->type == OP) && (node->data.opValue == OP_EXP))
-    {
-        return true;
-    }
-    return false;
+    return((node->type == OP) && (node->data.opValue == OP_EXP));
 }
 
 //-------------------------------------------------------------------
@@ -874,12 +840,7 @@ int isExp(node_t* node)
 int isLn(node_t* node)
 {
     CHECK(node != NULL, ERR_DIFF_NULL_PTR);
-
-    if((node->type == OP) && (node->data.opValue == OP_LN))
-    {
-        return true;
-    }
-    return false;
+    return((node->type == OP) && (node->data.opValue == OP_LN));
 }
 
 //-------------------------------------------------------------------
@@ -887,10 +848,5 @@ int isLn(node_t* node)
 int isOpenBrt(node_t* node)
 {
     CHECK(node != NULL, ERR_DIFF_NULL_PTR);
-
-    if((node->type == OP) && (node->data.opValue == OP_OPENBRT))
-    {
-        return true;
-    }
-    return false;
+    return((node->type == OP) && (node->data.opValue == OP_OPENBRT));
 }
